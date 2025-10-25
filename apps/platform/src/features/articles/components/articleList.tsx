@@ -1,7 +1,10 @@
 import { Avatar } from "@opencircle/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import MDEditor from "@uiw/react-md-editor";
+import { MessageCircle } from "lucide-react";
 import { getInitials } from "../../../utils/common";
+import { PostCardReactions } from "../../posts/components/postCardReactions";
+import { PostCommentSummary } from "../../posts/components/postCommentSummary";
 import { useArticles } from "../hooks/useArticles";
 
 export const ArticleList = () => {
@@ -51,6 +54,16 @@ export const ArticleList = () => {
 									</p>
 								</div>
 							</Link>
+						</section>
+						<section className="flex gap-4 items-center mt-4">
+							<PostCardReactions post={article} />
+							<div className="flex items-center gap-2 text-sm">
+								<MessageCircle size={18} />
+								<div>{article.comment_count}</div>
+							</div>
+							{article.comment_summary?.names && (
+								<PostCommentSummary names={article.comment_summary.names} />
+							)}
 						</section>
 					</main>
 				);

@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import MDEditor from "@uiw/react-md-editor";
+import { MessageCircle } from "lucide-react";
 import { Header } from "../../../components/header";
 import { useArticle } from "../../../features/articles/hooks/useArticle";
+import { PostCardReactions } from "../../../features/posts/components/postCardReactions";
+import { PostCommentSummary } from "../../../features/posts/components/postCommentSummary";
 
 export const Route = createFileRoute("/_socialLayout/articles/$id")({
 	component: RouteComponent,
@@ -24,6 +27,18 @@ function RouteComponent() {
 						className="!bg-transparent"
 					/>
 				</div>
+				{article && (
+					<section className="flex gap-4 items-center mt-6 pt-4 border-t border-border">
+						<PostCardReactions post={article} />
+						<div className="flex items-center gap-2 text-sm">
+							<MessageCircle size={18} />
+							<div>{article.comment_count}</div>
+						</div>
+						{article.comment_summary?.names && (
+							<PostCommentSummary names={article.comment_summary.names} />
+						)}
+					</section>
+				)}
 			</div>
 		</main>
 	);

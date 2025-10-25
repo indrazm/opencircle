@@ -24,20 +24,7 @@ export const RightSidebar = () => {
 					</div>
 				</section>
 			)}
-			<main className="p-4 space-y-8">
-				<section className="bg-linear-210 from-primary/40 to-primary/20 border border-border rounded-lg">
-					<div className="p-4 text-sm font-medium flex justify-between items-center">
-						<div>Picked Courses for You!</div>
-						<Stars size={14} />
-					</div>
-					<div className="bg-background-secondary border border-border p-4 rounded-lg space-y-2">
-						<h1>Build Job Directory App with Tanstack Router 2025</h1>
-						<p className="text-xs text-foreground/50 text-balance">
-							Learn how to build a job directory app using Tanstack Router.
-						</p>
-					</div>
-				</section>
-			</main>
+			<main className="p-4 space-y-8"></main>
 		</div>
 	);
 };

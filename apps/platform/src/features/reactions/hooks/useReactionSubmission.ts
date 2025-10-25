@@ -15,6 +15,11 @@ export const useReactionSubmission = () => {
 			queryClient.invalidateQueries({
 				queryKey: ["post", { id: variables.post_id }],
 			});
+
+			queryClient.invalidateQueries({ queryKey: ["articles"] });
+			queryClient.invalidateQueries({
+				queryKey: ["articles", { id: variables.post_id }],
+			});
 		},
 	});
 
