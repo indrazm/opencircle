@@ -1,0 +1,177 @@
+services:
+  # Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: opencircle-postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: opencircle
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - opencircle-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: opencircle-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - opencircle-network
+
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: opencircle-api
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/opencircle
+      - REDIS_URL=redis://redis:6379
+      - ENVIRONMENT=development
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - opencircle-network
+
+  # Celery Worker (for background tasks)
+  celery:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: opencircle-celery
+    command: uv run celery -A src.core.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/opencircle
+      - REDIS_URL=redis://redis:6379
+      - ENVIRONMENT=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app
+    restart: unless-stopped
+    networks:
+      - opencircle-network
+
+  # Platform Frontend
+  platform:
+    build:
+      context: .
+      dockerfile: apps/platform/Dockerfile
+    container_name: opencircle-platform
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - opencircle-network
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    container_name: opencircle-admin
+    ports:
+      - "4000:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - opencircle-network
+
+  # Migration Runner (one-time service)
+  migration:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: opencircle-migration
+    command: uv run alembic upgrade head
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/opencircle
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app
+    networks:
+      - opencircle-network
+    profiles:
+      - migration
+
+  # Database Admin (optional)
+  adminer:
+    image: adminer:latest
+    container_name: opencircle-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    networks:
+      - opencircle-network
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  opencircle-network:
+    driver: bridge
