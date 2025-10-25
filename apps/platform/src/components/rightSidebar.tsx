@@ -1,6 +1,5 @@
 import { Button } from "@opencircle/ui";
 import { Link } from "@tanstack/react-router";
-import { Stars } from "lucide-react";
 import { useAccount } from "../features/auth/hooks/useAccount";
 import { UserCard } from "../features/user/components/userCard";
 
