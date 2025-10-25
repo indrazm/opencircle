@@ -251,7 +251,6 @@ def get_all_nested_posts_by_parent_id(
 
     # Convert to list and sort by creation time to show newest first
     all_posts = list(posts_dict.values())
-    all_posts.sort(key=lambda p: p.created_at, reverse=True)
     return filter_private_channel_posts(all_posts, current_user_id, db)
 
 
