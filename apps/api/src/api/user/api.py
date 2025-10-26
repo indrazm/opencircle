@@ -1,17 +1,17 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from sqlalchemy.orm import joinedload
 from sqlmodel import Session
 
 from src.database.engine import get_session as get_db
+from src.database.models import User, UserSocial
 from src.modules.media.media_methods import create_media
 from src.modules.storages.storage_methods import upload_file
 from src.modules.user.user_methods import (
     create_user,
     delete_user,
     get_all_users,
-    get_user,
-    get_user_by_username,
     update_user,
 )
 
@@ -28,7 +28,12 @@ def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 def get_user_endpoint(user_id: str, db: Session = Depends(get_db)):
-    user = get_user(db, user_id)
+    user = (
+        db.query(User)
+        .options(joinedload(User.user_settings), joinedload(User.user_social))
+        .filter(User.id == user_id)
+        .first()
+    )
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -36,7 +41,12 @@ def get_user_endpoint(user_id: str, db: Session = Depends(get_db)):
 
 @router.get("/users/username/{username}", response_model=UserResponse)
 def get_user_by_username_endpoint(username: str, db: Session = Depends(get_db)):
-    user = get_user_by_username(db, username)
+    user = (
+        db.query(User)
+        .options(joinedload(User.user_settings), joinedload(User.user_social))
+        .filter(User.username == username)
+        .first()
+    )
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -55,10 +65,33 @@ def get_all_users_endpoint(
 @router.put("/users/{user_id}", response_model=UserResponse)
 def update_user_endpoint(user_id: str, user: UserUpdate, db: Session = Depends(get_db)):
     update_data = {k: v for k, v in user.model_dump().items() if v is not None}
+    user_social_data = update_data.pop("user_social", None)
+
     updated_user = update_user(db, user_id, update_data)
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
-    return updated_user
+
+    # Handle user_social updates
+    if user_social_data:
+        user_social = db.query(UserSocial).filter(UserSocial.user_id == user_id).first()
+        if not user_social:
+            user_social = UserSocial(user_id=user_id)
+            db.add(user_social)
+
+        for key, value in user_social_data.items():
+            setattr(user_social, key, value)
+
+        db.commit()
+
+    # Load user with relationships before returning
+    user_with_relations = (
+        db.query(User)
+        .options(joinedload(User.user_settings), joinedload(User.user_social))
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    return user_with_relations
 
 
 @router.put("/users/{user_id}/with-file", response_model=UserResponse)
@@ -71,6 +104,8 @@ def update_user_with_file_endpoint(
     import json
 
     user_data = json.loads(user)
+    user_social_data = user_data.pop("user_social", None)
+
     updated_user = update_user(db, user_id, user_data)
 
     if not updated_user:
@@ -86,9 +121,27 @@ def update_user_with_file_endpoint(
         create_media(db, media_data)
         updated_user.avatar_url = url
 
+    # Handle user_social updates
+    if user_social_data:
+        user_social = db.query(UserSocial).filter(UserSocial.user_id == user_id).first()
+        if not user_social:
+            user_social = UserSocial(user_id=user_id)
+            db.add(user_social)
+
+        for key, value in user_social_data.items():
+            setattr(user_social, key, value)
+
     db.commit()
-    db.refresh(updated_user)
-    return updated_user
+
+    # Load user with relationships before returning
+    user_with_relations = (
+        db.query(User)
+        .options(joinedload(User.user_settings), joinedload(User.user_social))
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    return user_with_relations
 
 
 @router.delete("/users/{user_id}")

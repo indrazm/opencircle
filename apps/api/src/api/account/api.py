@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from src.core.settings import settings
 from src.database.engine import get_session as get_db
-from src.database.models import User, UserSettings
+from src.database.models import User, UserSettings, UserSocial
 from src.modules.user.user_methods import get_user_by_username
 
 from .serializer import UserResponse
@@ -55,24 +55,32 @@ def get_account(
     current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
     """Get current user account information."""
-    # Load user with user_settings relationship
-    user_with_settings = (
+    # Load user with user_settings and user_social relationships
+    user_with_data = (
         db.query(User)
-        .options(joinedload(User.user_settings))
+        .options(joinedload(User.user_settings), joinedload(User.user_social))
         .filter(User.id == current_user.id)
         .first()
     )
 
-    if not user_with_settings:
+    if not user_with_data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
 
     # Create user settings if they don't exist (for existing users)
-    if not user_with_settings.user_settings:
-        user_settings = UserSettings(user_id=user_with_settings.id, is_onboarded=False)
+    if not user_with_data.user_settings:
+        user_settings = UserSettings(user_id=user_with_data.id, is_onboarded=False)
         db.add(user_settings)
         db.commit()
-        db.refresh(user_with_settings)
 
-    return UserResponse.model_validate(user_with_settings)
+    # Create user social if they don't exist (for existing users)
+    if not user_with_data.user_social:
+        user_social = UserSocial(user_id=user_with_data.id)
+        db.add(user_social)
+        db.commit()
+
+    # Refresh to get the newly created relationships
+    db.refresh(user_with_data)
+
+    return UserResponse.model_validate(user_with_data)

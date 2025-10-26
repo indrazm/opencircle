@@ -118,6 +118,9 @@ class User(BaseModel, table=True):
             "UserSettings", back_populates="user", uselist=False
         )
     )
+    user_social: "UserSocial" = Relationship(
+        sa_relationship=relationship("UserSocial", back_populates="user", uselist=False)
+    )
 
 
 class UserSettings(BaseModel, table=True):
@@ -127,6 +130,19 @@ class UserSettings(BaseModel, table=True):
     is_onboarded: bool = Field(default=False)
     user: "User" = Relationship(
         sa_relationship=relationship("User", back_populates="user_settings")
+    )
+
+
+class UserSocial(BaseModel, table=True):
+    __tablename__ = "user_social"
+
+    user_id: str = Field(foreign_key="user.id", unique=True)
+    twitter_url: str | None = Field(default=None)
+    linkedin_url: str | None = Field(default=None)
+    github_url: str | None = Field(default=None)
+    website_url: str | None = Field(default=None)
+    user: "User" = Relationship(
+        sa_relationship=relationship("User", back_populates="user_social")
     )
 
 

@@ -18,6 +18,7 @@ function EditProfile() {
 		fileInputRef,
 		handleSubmit,
 		handleChange,
+		handleSocialChange,
 		handleUpload,
 		handleFileChange,
 	} = useEditProfile();
@@ -71,6 +72,38 @@ function EditProfile() {
 						className="w-full p-2 border border-border rounded-md bg-background text-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary"
 						rows={4}
 					/>
+
+					<div className="space-y-3">
+						<h3 className="text-sm font-medium text-foreground/80">
+							Social Media
+						</h3>
+						<Input
+							value={formData.user_social?.twitter_url || ""}
+							onChange={(e) =>
+								handleSocialChange("twitter_url", e.target.value)
+							}
+							placeholder="Twitter/X URL"
+						/>
+						<Input
+							value={formData.user_social?.linkedin_url || ""}
+							onChange={(e) =>
+								handleSocialChange("linkedin_url", e.target.value)
+							}
+							placeholder="LinkedIn URL"
+						/>
+						<Input
+							value={formData.user_social?.github_url || ""}
+							onChange={(e) => handleSocialChange("github_url", e.target.value)}
+							placeholder="GitHub URL"
+						/>
+						<Input
+							value={formData.user_social?.website_url || ""}
+							onChange={(e) =>
+								handleSocialChange("website_url", e.target.value)
+							}
+							placeholder="Website URL"
+						/>
+					</div>
 
 					<Button type="submit" disabled={updateMutation.isPending}>
 						{updateMutation.isPending ? "Saving..." : "Save"}

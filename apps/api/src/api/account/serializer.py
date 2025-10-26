@@ -13,6 +13,16 @@ class UserSettingsResponse(BaseModel):
         from_attributes = True
 
 
+class UserSocialResponse(BaseModel):
+    twitter_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    website_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class UserResponse(BaseModel):
     id: str
     name: Optional[str] = None
@@ -26,6 +36,7 @@ class UserResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     user_settings: Optional[UserSettingsResponse] = None
+    user_social: Optional[UserSocialResponse] = None
 
     class Config:
         from_attributes = True

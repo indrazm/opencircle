@@ -59,6 +59,13 @@ export interface UserSettings {
   is_onboarded: boolean;
 }
 
+export interface UserSocial {
+  twitter_url?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  website_url?: string;
+}
+
 export interface User {
   id: string;
   name?: string;
@@ -72,6 +79,7 @@ export interface User {
   created_at: string;
   updated_at: string;
   user_settings?: UserSettings;
+  user_social?: UserSocial;
 }
 
 export interface UserCreate {

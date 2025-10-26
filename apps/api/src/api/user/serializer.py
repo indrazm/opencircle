@@ -16,6 +16,13 @@ class UserCreate(BaseModel):
     role: Role = Role.USER
 
 
+class UserSocialUpdate(BaseModel):
+    twitter_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    website_url: Optional[str] = None
+
+
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     bio: Optional[str] = None
@@ -26,6 +33,7 @@ class UserUpdate(BaseModel):
     is_verified: Optional[bool] = None
     avatar_url: Optional[str] = None
     role: Optional[Role] = None
+    user_social: Optional[UserSocialUpdate] = None
 
 
 class UserUpdateWithFile(BaseModel):
@@ -38,6 +46,24 @@ class UserUpdateWithFile(BaseModel):
     is_verified: Optional[bool] = None
     avatar_url: Optional[str] = None
     role: Optional[Role] = None
+    user_social: Optional[UserSocialUpdate] = None
+
+
+class UserSocialResponse(BaseModel):
+    twitter_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    github_url: Optional[str] = None
+    website_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class UserSettingsResponse(BaseModel):
+    is_onboarded: bool
+
+    class Config:
+        from_attributes = True
 
 
 class UserResponse(BaseModel):
@@ -52,6 +78,8 @@ class UserResponse(BaseModel):
     role: Role
     created_at: datetime
     updated_at: datetime
+    user_settings: Optional[UserSettingsResponse] = None
+    user_social: Optional[UserSocialResponse] = None
 
     class Config:
         from_attributes = True

@@ -1,4 +1,8 @@
-import type { UserUpdate, UserUpdateWithFile } from "@opencircle/core";
+import type {
+	UserSocial,
+	UserUpdate,
+	UserUpdateWithFile,
+} from "@opencircle/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
@@ -11,10 +15,18 @@ export const useEditProfile = () => {
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [formData, setFormData] = useState<UserUpdateWithFile>({
+	const [formData, setFormData] = useState<
+		UserUpdateWithFile & { user_social?: UserSocial }
+	>({
 		name: "",
 		bio: "",
 		avatar_url: undefined,
+		user_social: {
+			twitter_url: "",
+			linkedin_url: "",
+			github_url: "",
+			website_url: "",
+		},
 	});
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
@@ -24,6 +36,12 @@ export const useEditProfile = () => {
 				name: account.name || "",
 				bio: account.bio || "",
 				avatar_url: account.avatar_url || undefined,
+				user_social: {
+					twitter_url: account.user_social?.twitter_url || "",
+					linkedin_url: account.user_social?.linkedin_url || "",
+					github_url: account.user_social?.github_url || "",
+					website_url: account.user_social?.website_url || "",
+				},
 			});
 		}
 	}, [account]);
@@ -55,7 +73,20 @@ export const useEditProfile = () => {
 	};
 
 	const handleChange = (field: keyof UserUpdateWithFile, value: string) => {
-		setFormData((prev: UserUpdateWithFile) => ({ ...prev, [field]: value }));
+		setFormData((prev: UserUpdateWithFile & { user_social?: UserSocial }) => ({
+			...prev,
+			[field]: value,
+		}));
+	};
+
+	const handleSocialChange = (field: keyof UserSocial, value: string) => {
+		setFormData((prev: UserUpdateWithFile & { user_social?: UserSocial }) => ({
+			...prev,
+			user_social: {
+				...prev.user_social,
+				[field]: value,
+			},
+		}));
 	};
 
 	const handleUpload = () => {
@@ -88,6 +119,7 @@ export const useEditProfile = () => {
 		fileInputRef,
 		handleSubmit,
 		handleChange,
+		handleSocialChange,
 		handleUpload,
 		handleFileChange,
 	};
