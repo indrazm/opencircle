@@ -10,11 +10,6 @@ module.exports = {
       "npmPublish": false,
       "tarballDir": "dist"
     }],
-    ["@semantic-release/github", {
-      "assets": [
-        {"path": "CHANGELOG.md", "label": "Changelog"}
-      ]
-    }],
     ["@semantic-release/git", {
       "assets": ["CHANGELOG.md", "package.json", "packages/*/package.json", "apps/*/package.json",
 "apps/api/pyproject.toml"],
