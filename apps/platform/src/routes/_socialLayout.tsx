@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { LeftSidebar } from "../components/leftSidebar";
+import { MobileBottomNav } from "../components/mobileBottomNav";
 import { RightSidebar } from "../components/rightSidebar";
 
 export const Route = createFileRoute("/_socialLayout")({
@@ -12,12 +13,13 @@ function RouteComponent() {
 			<aside className="hidden md:block w-52 border-r border-border">
 				<LeftSidebar />
 			</aside>
-			<main className="w-full md:flex-1">
+			<main className="w-full md:flex-1 pb-16 md:pb-0">
 				<Outlet />
 			</main>
 			<aside className="hidden md:block w-80 border-x border-border">
 				<RightSidebar />
 			</aside>
+			<MobileBottomNav />
 		</main>
 	);
 }
