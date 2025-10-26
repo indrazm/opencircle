@@ -168,6 +168,13 @@ python scripts/sync-python-version.py
 ### Need to modify a changeset?
 Edit the `.changeset/[name].md` file directly.
 
+### uv command not found in CI?
+The GitHub workflow automatically sets up `uv` for Python dependency management. If you encounter `uv: command not found` errors locally, make sure `uv` is installed:
+```bash
+# Install uv locally if needed
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ## Migration from Semantic Release
 
 - **No more strict commit messages** - use conventional commits for clarity, but not required
