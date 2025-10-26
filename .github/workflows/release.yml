@@ -57,27 +57,29 @@ jobs:
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
 
-          # Create a simple changeset for the version bump
-          mkdir -p .changeset
-          cat > .changeset/release.md << EOF
-          ---
-          "@opencircle/core": ${{ github.event.inputs.version_type }}
-          "@opencircle/ui": ${{ github.event.inputs.version_type }}
-          ---
+          # Calculate next version
+          case "${{ github.event.inputs.version_type }}" in
+            "patch")
+              NEW_VERSION=$(npm version patch --no-git-tag-version | sed 's/v//')
+              ;;
+            "minor")
+              NEW_VERSION=$(npm version minor --no-git-tag-version | sed 's/v//')
+              ;;
+            "major")
+              NEW_VERSION=$(npm version major --no-git-tag-version | sed 's/v//')
+              ;;
+          esac
 
-          Release ${{ github.event.inputs.version_type }} version bump
-          EOF
+          echo "New version: $NEW_VERSION"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
-          # Update versions
-          pnpm changeset version
+          # Update workspace packages
+          find packages apps -name "package.json" -not -path "*/admin/*" -not -path "*/platform/*" -exec sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"$NEW_VERSION\"/g" {} \;
 
           # Sync Python version
           python scripts/sync-python-version.py
 
-          # Get new version
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "New version: $NEW_VERSION"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "✅ All versions updated to $NEW_VERSION"
 
       - name: Commit version changes
         run: |
