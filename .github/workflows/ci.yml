@@ -16,6 +16,10 @@ jobs:
       - uses: moonrepo/setup-toolchain@v0
         with:
           auto-install: true
+      - name: Install Node.js dependencies
+        run: pnpm install
+      - name: Install Python dependencies
+        run: cd apps/api && uv sync
       - run: moon run :lint
 
   build:
