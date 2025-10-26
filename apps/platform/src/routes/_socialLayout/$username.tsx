@@ -1,6 +1,8 @@
 import { Avatar } from "@opencircle/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { Header } from "../../components/header";
+import { usePosts } from "../../features/posts/hooks/usePosts";
+import { UserTabs } from "../../features/user/components/userTabs";
 import { useUser } from "../../features/user/hooks/useUser";
 import { getInitials } from "../../utils/common";
 
@@ -11,6 +13,7 @@ export const Route = createFileRoute("/_socialLayout/$username")({
 function UserDetail() {
 	const username = Route.useParams().username;
 	const { user } = useUser(username);
+	const { posts } = usePosts({ userId: user?.id });
 
 	if (!user) {
 		return <div>User not found</div>;
@@ -37,12 +40,7 @@ function UserDetail() {
 					<div>{user.bio}</div>
 				</main>
 			</section>
-			<section className="justify-center p-4 flex gap-8 border-y border-border">
-				<div>Posts</div>
-				<div>Replies</div>
-				<div>Media</div>
-				<div>Joined Courses</div>
-			</section>
+			<UserTabs posts={posts} />
 		</main>
 	);
 }
