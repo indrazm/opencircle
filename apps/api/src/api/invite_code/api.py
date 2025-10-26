@@ -132,10 +132,9 @@ def validate_invite_code_endpoint(
             auto_joined_channel=False,
         )
 
-    # Auto-join user to channel if specified
     auto_joined_channel = False
     channel_id = None
-    if invite_code.auto_join_channel_id:
+    if invite_code and invite_code.auto_join_channel_id:
         auto_join_user_to_channel(db, request.user_id, invite_code.auto_join_channel_id)
         auto_joined_channel = True
         channel_id = invite_code.auto_join_channel_id

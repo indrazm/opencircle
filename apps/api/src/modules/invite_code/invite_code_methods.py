@@ -3,6 +3,7 @@ import string
 from datetime import datetime, timezone
 from typing import List, Optional
 
+from sqlalchemy import desc
 from sqlmodel import Session, and_, select
 
 from src.database.models import (
@@ -25,7 +26,7 @@ def create_invite_code(
     max_uses: int = 1,
     expires_at: Optional[str] = None,
     auto_join_channel_id: Optional[str] = None,
-    created_by: str = None,
+    created_by: str | None = None,
 ) -> InviteCode:
     """Create a new invite code."""
     if not code:
@@ -84,7 +85,7 @@ def get_all_invite_codes(
         statement = statement.where(and_(*filters))
 
     statement = (
-        statement.offset(skip).limit(limit).order_by(InviteCode.created_at.desc())
+        statement.offset(skip).limit(limit).order_by(desc(InviteCode.created_at))
     )
     return list(db.exec(statement).all())
 
@@ -153,20 +154,21 @@ def validate_and_use_invite_code(
             db.commit()
             return None, "Invite code has expired"
 
-    # Check if code has reached max uses
     if invite_code.used_count >= invite_code.max_uses:
         # Mark as used
         invite_code.status = InviteCodeStatus.USED
         db.commit()
         return None, "Invite code has been fully used"
 
-    # Check if user already used this code
     if user_id in [user.id for user in invite_code.used_by]:
         return None, "You have already used this invite code"
 
-    # Use the code
     invite_code.used_count += 1
-    invite_code.used_by.append(db.get(User, user_id))
+    user = db.exec(select(User).where(User.id == user_id)).first()
+    if user:
+        invite_code.used_by.append(user)
+    else:
+        return None, "User not found"
 
     # Mark as used if max uses reached
     if invite_code.used_count >= invite_code.max_uses:
@@ -209,7 +211,7 @@ def get_invite_codes_by_channel(
         .where(InviteCode.auto_join_channel_id == channel_id)
         .offset(skip)
         .limit(limit)
-        .order_by(InviteCode.created_at.desc())
+        .order_by(desc(InviteCode.created_at))
     )
 
     return list(db.exec(statement).all())

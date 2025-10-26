@@ -7,3 +7,6 @@ tasks:
 
   format:
     command: "pnpm format"
+
+  lint:
+    command: "pnpm lint"
