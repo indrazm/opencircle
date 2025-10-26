@@ -1,1 +1,1 @@
-pnpm lint
+moon run :lint
