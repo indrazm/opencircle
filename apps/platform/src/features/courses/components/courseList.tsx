@@ -5,11 +5,7 @@ import { useCourses } from "../hooks/useCourses";
 
 export const CourseList = () => {
 	const navigate = useNavigate();
-	const { courses, isLoading } = useCourses();
-
-	if (isLoading) {
-		return <div>Loading...</div>;
-	}
+	const { courses } = useCourses();
 
 	return (
 		<div>

@@ -75,7 +75,7 @@ export const PostCard = ({ post }: PostCardProps) => {
 					<UrlPreview content={post.content} />
 				</div>
 				<MediaGallery media={post.medias} />
-				<div className="flex gap-2 items-center mt-4">
+				<div className="flex gap-2 items-center mt-4 -ml-1">
 					{post.channel && (
 						<div className="flex px-2 py-1 rounded-full text-xs font-medium bg-background-secondary w-fit ">
 							{post.channel.emoji} {post.channel.name}

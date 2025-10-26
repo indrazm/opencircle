@@ -12,13 +12,13 @@ export const PostCardReactions = ({ post }: PostCardReactionsProps) => {
 	const { submitReaction } = useReactionSubmission();
 
 	return (
-		<div className="flex items-center gap-2 text-sm">
+		<div className="flex items-center gap-1 text-sm">
 			{post.reactions?.summary && post.reactions.summary.length > 0 ? (
 				<div className="flex items-center gap-1">
 					{post.reactions.summary.map((reaction) => (
 						<div
 							key={reaction.emoji}
-							className={`flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
+							className={`flex items-center gap-2 px-2 py-1 rounded-full text-sm ${
 								reaction.me
 									? "bg-primary/20 border border-primary/30"
 									: "bg-background-secondary hover:bg-background-tertiary cursor-pointer"
