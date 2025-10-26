@@ -113,6 +113,21 @@ class User(BaseModel, table=True):
             "InviteCode", back_populates="used_by", foreign_keys="User.invite_code_id"
         )
     )
+    user_settings: "UserSettings" = Relationship(
+        sa_relationship=relationship(
+            "UserSettings", back_populates="user", uselist=False
+        )
+    )
+
+
+class UserSettings(BaseModel, table=True):
+    __tablename__ = "user_settings"
+
+    user_id: str = Field(foreign_key="user.id", unique=True)
+    is_onboarded: bool = Field(default=False)
+    user: "User" = Relationship(
+        sa_relationship=relationship("User", back_populates="user_settings")
+    )
 
 
 class Post(BaseModel, table=True):

@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from sqlmodel import Session
 
 from src.core.settings import settings
-from src.database.models import InviteCodeStatus, User
+from src.database.models import InviteCodeStatus, User, UserSettings
 from src.modules.invite_code.invite_code_methods import (
     auto_join_user_to_channel,
     get_invite_code_by_code,
@@ -91,6 +91,11 @@ def register_user(
     }
 
     user = create_user(db, user_data)
+
+    # Create user settings for the new user
+    user_settings = UserSettings(user_id=user.id, is_onboarded=False)
+    db.add(user_settings)
+    db.commit()
 
     # Handle invite code usage and auto-join after user creation
     if invite_code:

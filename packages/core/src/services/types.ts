@@ -55,6 +55,10 @@ export const EnrollmentStatus = {
 
 export type EnrollmentStatus = typeof EnrollmentStatus[keyof typeof EnrollmentStatus];
 
+export interface UserSettings {
+  is_onboarded: boolean;
+}
+
 export interface User {
   id: string;
   name?: string;
@@ -67,6 +71,7 @@ export interface User {
   role: Role;
   created_at: string;
   updated_at: string;
+  user_settings?: UserSettings;
 }
 
 export interface UserCreate {

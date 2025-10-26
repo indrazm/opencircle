@@ -33,6 +33,17 @@ export const UserCard = ({ account }: UserCardProps) => {
 				>
 					<DropdownMenu.Item
 						className="p-3 hover:bg-primary focus-within:outline-none"
+						onClick={() =>
+							navigate({
+								to: "/$username",
+								params: { username: account.username },
+							})
+						}
+					>
+						Profile
+					</DropdownMenu.Item>
+					<DropdownMenu.Item
+						className="p-3 hover:bg-primary focus-within:outline-none"
 						onClick={() => navigate({ to: "/edit-profile" })}
 					>
 						Edit Profile

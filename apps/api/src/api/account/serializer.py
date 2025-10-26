@@ -6,6 +6,13 @@ from pydantic import BaseModel
 from src.database.models import Role
 
 
+class UserSettingsResponse(BaseModel):
+    is_onboarded: bool
+
+    class Config:
+        from_attributes = True
+
+
 class UserResponse(BaseModel):
     id: str
     name: Optional[str] = None
@@ -18,6 +25,7 @@ class UserResponse(BaseModel):
     role: Role
     created_at: datetime
     updated_at: datetime
+    user_settings: Optional[UserSettingsResponse] = None
 
     class Config:
         from_attributes = True
