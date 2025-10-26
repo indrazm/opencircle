@@ -7,8 +7,6 @@
     "format": "pnpm exec biome format --write",
     "lint:fix": "pnpm exec biome check --write --unsafe",
     "lint": "pnpm exec biome check",
-    "changeset": "changeset",
-    "version": "changeset version && python scripts/sync-python-version.py",
     "prepare": "husky"
   },
   "keywords": [],
@@ -17,10 +15,6 @@
   "packageManager": "pnpm@10.18.3",
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.0.0",
-    "@changesets/cli": "^2.29.7",
-    "conventional-changelog-conventionalcommits": "^8.0.0",
     "husky": "^9.0.0"
   }
 }
