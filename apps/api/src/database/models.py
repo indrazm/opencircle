@@ -363,3 +363,13 @@ class UrlPreview(BaseModel, table=True):
     title: str | None = Field(default=None)
     description: str | None = Field(default=None)
     image_url: str | None = Field(default=None)
+
+
+class AppSettings(BaseModel, table=True):
+    __tablename__ = "app_settings"
+
+    # Override id to use a constant value, ensuring only one record exists
+    id: str = Field(default="singleton", primary_key=True)
+    app_name: str = Field(default="OpenCircle")
+    app_logo_url: str | None = Field(default=None)
+    enable_sign_up: bool = Field(default=True)

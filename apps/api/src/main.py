@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,8 +18,39 @@ from src.api.notifications.api import router as notifications_router
 from src.api.post.api import router as post_router
 from src.api.reaction.api import router as reaction_router
 from src.api.user.api import router as user_router
+from src.database.engine import get_session
+from src.modules.appsettings import appsettings_methods
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifecycle with AppSettings initialization."""
+    logger.info("Initializing AppSettings...")
+    try:
+        session = next(get_session())
+        appsettings_methods.get_or_create_app_settings(
+            session,
+            {
+                "app_name": "OpenCircle",
+                "app_logo_url": None,
+                "enable_sign_up": True,
+            },
+        )
+        logger.info("AppSettings initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize AppSettings: {e}")
+        logger.warning("Continuing startup without AppSettings initialization")
+    finally:
+        if "session" in locals():
+            session.close()
+
+    yield
+
+    # Shutdown: Cleanup if needed
+    logger.info("Application shutting down...")
+
+
+app = FastAPI(lifespan=lifespan)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
