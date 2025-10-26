@@ -20,8 +20,23 @@ export const useLogin = () => {
 			const res = await api.auth.login({ username, password });
 			return res;
 		},
-		onSuccess: (data) => {
+		onSuccess: async (data) => {
 			localStorage.setItem("token", data.access_token);
+
+			// Check if user is admin
+			try {
+				const accountData = await api.account.getAccount();
+				if (accountData.role !== "admin") {
+					navigate({ to: "/" });
+					toast.error("Access denied: Admin role required");
+					return;
+				}
+			} catch {
+				navigate({ to: "/" });
+				toast.error("Failed to verify admin access");
+				return;
+			}
+
 			navigate({ to: "/dashboard" });
 		},
 		onError: (error) => {
