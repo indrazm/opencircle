@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build UI Package
+        run: pnpm --filter @opencircle/ui build
+
       - name: Build Admin
         run: pnpm --filter admin build
         env:
@@ -61,6 +64,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build UI Package
+        run: pnpm --filter @opencircle/ui build
 
       - name: Build Platform
         run: pnpm --filter platform build
