@@ -7,7 +7,7 @@ export const useNotifications = (skip: number = 0, limit: number = 100) => {
 		enabled: localStorage.getItem("token") !== null,
 		queryKey: ["notifications", skip, limit],
 		queryFn: async () => {
-			const response = await api.notifications.getNotifications(skip, limit);
+			const response = await api.notifications.getAll(skip, limit);
 			return response;
 		},
 		retry: (failureCount, error) => {
@@ -36,7 +36,6 @@ export const useMarkNotificationAsRead = () => {
 			return response;
 		},
 		onSuccess: () => {
-			// Invalidate notifications query to refetch updated data
 			queryClient.invalidateQueries({ queryKey: ["notifications"] });
 		},
 		retry: (failureCount, error) => {

@@ -10,7 +10,7 @@ function NotificationDetail() {
 	const { id } = Route.useParams();
 	const { notifications } = useNotifications(0, 100);
 
-	const notification = notifications.find((n) => n.id === id);
+	const notification = notifications.find((n: { id: string }) => n.id === id);
 
 	if (!notification) {
 		return (
