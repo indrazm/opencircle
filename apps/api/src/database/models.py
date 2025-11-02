@@ -153,6 +153,7 @@ class Post(BaseModel, table=True):
     user_id: str = Field(foreign_key="user.id")
     channel_id: str | None = Field(foreign_key="channel.id", default=None)
     parent_id: str | None = Field(foreign_key="post.id", default=None)
+    is_pinned: bool = Field(default=False)
     user: "User" = Relationship(
         sa_relationship=relationship("User", back_populates="posts")
     )

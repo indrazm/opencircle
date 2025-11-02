@@ -69,6 +69,7 @@ def build_post_response_data(post, current_user_id: Optional[str], db: Session) 
         "user_id": post.user_id,
         "channel_id": post.channel_id,
         "parent_id": post.parent_id,
+        "is_pinned": post.is_pinned,
         "user": post.user,
         "channel": post.channel,
         "medias": post.medias,

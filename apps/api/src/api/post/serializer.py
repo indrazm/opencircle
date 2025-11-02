@@ -31,6 +31,7 @@ class PostResponse(BaseModel):
     type: PostType
     user_id: str
     channel_id: Optional[str] = None
+    is_pinned: bool = False
     parent_id: Optional[str] = None
     user: UserResponse
     channel: Optional[ChannelResponse] = None

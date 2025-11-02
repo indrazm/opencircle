@@ -158,7 +158,7 @@ def get_posts_by_parent_id(db: Session, parent_id: str) -> list[Post]:
             joinedload(Post.user), joinedload(Post.channel), joinedload(Post.medias)
         )
         .where(Post.parent_id == parent_id)
-        .order_by(desc(Post.created_at))  # type: ignore
+        .order_by(desc(Post.is_pinned), desc(Post.created_at))  # type: ignore
     )
     posts = list(db.exec(statement).all())
     return posts
@@ -178,12 +178,12 @@ def get_all_nested_posts_by_parent_id(
     # 5. Order by parent creation time first, then by reply creation time to maintain hierarchy
     sql = """
     WITH RECURSIVE reply_tree AS (
-        SELECT p.id, p.parent_id, p.created_at, p.updated_at, p.content, p.type, p.user_id, p.channel_id, 0 as depth,
+        SELECT p.id, p.parent_id, p.created_at, p.is_pinned, p.updated_at, p.content, p.type, p.user_id, p.channel_id, 0 as depth,
                p.created_at as parent_created_at
         FROM post p
         WHERE p.parent_id = :parent_id
         UNION ALL
-        SELECT p.id, p.parent_id, p.created_at, p.updated_at, p.content, p.type, p.user_id, p.channel_id, rt.depth + 1,
+        SELECT p.id, p.parent_id, p.created_at, p.is_pinned, p.updated_at, p.content, p.type, p.user_id, p.channel_id, rt.depth + 1,
                rt.parent_created_at
         FROM post p
         INNER JOIN reply_tree rt ON p.parent_id = rt.id
@@ -194,7 +194,7 @@ def get_all_nested_posts_by_parent_id(
     FROM reply_tree rt
     LEFT JOIN "user" u ON rt.user_id = u.id
     LEFT JOIN media m ON rt.id = m.post_id
-    ORDER BY rt.parent_created_at DESC, rt.depth ASC, rt.created_at DESC;
+    ORDER BY rt.parent_created_at DESC, rt.depth ASC, rt.is_pinned DESC, rt.created_at DESC;
     """
     result = db.exec(text(sql).bindparams(parent_id=parent_id))
 
@@ -263,7 +263,7 @@ def get_posts_by_channel_slug(db: Session, channel_slug: str) -> list[Post]:
         )  # type: ignore
         .join(Channel)
         .where(Channel.slug == channel_slug)
-        .order_by(desc(Post.created_at))
+        .order_by(desc(Post.is_pinned), desc(Post.created_at))
     )
     posts = list(db.exec(statement).unique().all())
     return posts
@@ -279,7 +279,7 @@ def get_all_posts(
             joinedload(Post.user), joinedload(Post.channel), joinedload(Post.medias)
         )  # type: ignore
         .where(Post.type == "post")
-        .order_by(desc(Post.created_at))
+        .order_by(desc(Post.is_pinned), desc(Post.created_at))
         .offset(skip)
         .limit(limit)
     )
