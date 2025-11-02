@@ -18,11 +18,14 @@ export const LeftSidebar = () => {
 							className="w-[60%] ml-2"
 						/>
 					) : (
-						<section className="flex gap-2 items-center ml-2">
+						<section className="relative flex gap-2 items-center ml-2">
 							<div className="w-6 h-6 bg-foreground text-background rounded-lg flex justify-center items-center">
 								<Zap size={12} fill="currentColor" />
 							</div>
 							<h2 className="font-medium">Opencircle</h2>
+							<div className="-ml-1 tracking-tight bg-foreground text-background rounded-lg px-1 py-0.5 text-[10px] font-medium">
+								alpha
+							</div>
 						</section>
 					)}
 				</Link>
