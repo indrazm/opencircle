@@ -14,7 +14,7 @@ import { ReplyForm } from "../../../features/posts/components/replyForm";
 import { usePost } from "../../../features/posts/hooks/usePost";
 import { usePostDelete } from "../../../features/posts/hooks/usePostDelete";
 import { usePosts } from "../../../features/posts/hooks/usePosts";
-import { renderContent } from "../../../features/posts/utils";
+import { renderContent } from "../../../features/posts/utils/contentRendering";
 import { getInitials } from "../../../utils/common";
 
 export const Route = createFileRoute("/_socialLayout/posts/$id")({

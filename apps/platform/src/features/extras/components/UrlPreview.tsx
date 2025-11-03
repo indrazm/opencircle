@@ -1,4 +1,4 @@
-import { parseUrls } from "../../posts/utils";
+import { parseUrls } from "../../posts/utils/contentParsing";
 import { useUrlPreview } from "../hooks/useUrlPreview";
 
 interface UrlPreviewProps {
