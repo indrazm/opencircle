@@ -54,21 +54,23 @@ export const PostsList = () => {
 				<div className="text-balance">
 					You are not eligible to access this content.
 				</div>
-				<div className="space-y-2">
-					<Input
-						placeholder="Invite Code"
-						className="w-full"
-						value={inviteCode}
-						onChange={(e) => setInviteCode(e.target.value)}
-					/>
-					<Button
-						className="w-full"
-						onClick={handleRequestAccess}
-						disabled={isSubmitting}
-					>
-						{isSubmitting ? "Processing..." : "Request Access"}
-					</Button>
-				</div>
+				{account?.id && (
+					<div className="space-y-2">
+						<Input
+							placeholder="Invite Code"
+							className="w-full"
+							value={inviteCode}
+							onChange={(e) => setInviteCode(e.target.value)}
+						/>
+						<Button
+							className="w-full"
+							onClick={handleRequestAccess}
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? "Processing..." : "Request Access"}
+						</Button>
+					</div>
+				)}
 			</div>
 		);
 	}
