@@ -1,9 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@opencircle/ui";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArticleList } from "../../features/articles/components/ArticleList";
-import {
-	useArticleSubmission,
-	useArticles,
-} from "../../features/articles/hooks";
+import { useArticleSubmission } from "../../features/articles/hooks/useArticleSubmission";
+import { useArticles } from "../../features/articles/hooks/useArticles";
 
 export const Route = createFileRoute("/_dashboardLayout/articles/")({
 	component: RouteComponent,
@@ -24,10 +23,18 @@ function RouteComponent() {
 	};
 
 	return (
-		<ArticleList
-			articles={articles || []}
-			onDelete={handleDelete}
-			loading={isArticlesLoading}
-		/>
+		<main>
+			<div className="flex justify-between items-center mb-4">
+				<h1 className="text-2xl font-medium">Articles</h1>
+				<Link to="/articles/new">
+					<Button size="sm">Create Article</Button>
+				</Link>
+			</div>
+			<ArticleList
+				articles={articles || []}
+				onDelete={handleDelete}
+				loading={isArticlesLoading}
+			/>
+		</main>
 	);
 }

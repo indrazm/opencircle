@@ -2,7 +2,7 @@ import type { UrlPreview } from "@opencircle/core";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { api } from "../../../utils/api";
-import { parseUrls } from "../../posts/utils";
+import { parseUrls } from "../../posts/utils/contentParsing";
 
 export const useUrlPreview = (content: string) => {
 	const urls = useMemo(() => {

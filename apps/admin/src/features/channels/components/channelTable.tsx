@@ -6,6 +6,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { Edit, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface ChannelTableProps {
@@ -76,6 +77,38 @@ export const ChannelTable = ({ channels, isLoading }: ChannelTableProps) => {
 				const date = new Date(row.getValue("created_at"));
 				return date.toLocaleDateString();
 			},
+		},
+		{
+			id: "actions",
+			header: "Actions",
+			cell: ({ row }) => {
+				const channel = row.original;
+				return (
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							onClick={() => {
+								console.log("Edit channel:", channel);
+							}}
+							className="p-1 hover:bg-gray-100 rounded"
+							title="Edit"
+						>
+							<Edit size={16} />
+						</button>
+						<button
+							type="button"
+							onClick={() => {
+								console.log("Delete channel:", channel);
+							}}
+							className="p-1 hover:bg-red-100 rounded text-red-600"
+							title="Delete"
+						>
+							<Trash2 size={16} />
+						</button>
+					</div>
+				);
+			},
+			enableSorting: false,
 		},
 	];
 

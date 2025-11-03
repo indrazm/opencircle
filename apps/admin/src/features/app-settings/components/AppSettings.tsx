@@ -4,7 +4,7 @@ import { Save, Settings, Upload } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import toast from "react-hot-toast";
 import { useAppSettings } from "../hooks/useAppSettings";
-import type { AppSettingsFormData } from "../types";
+import type { AppSettingsFormData } from "../utils/types";
 
 export function AppSettings() {
 	const {

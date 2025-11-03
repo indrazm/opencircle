@@ -1,4 +1,3 @@
-import { Button } from "@opencircle/ui";
 import { Link } from "@tanstack/react-router";
 import {
 	type ColumnDef,
@@ -7,8 +6,8 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Edit, Eye, Plus, Trash2 } from "lucide-react";
-import type { Article } from "../types/article";
+import { Edit, Eye, Trash2 } from "lucide-react";
+import type { Article } from "../utils/types";
 
 interface ArticleListProps {
 	articles: Article[];
@@ -108,71 +107,55 @@ export const ArticleList = ({
 		getCoreRowModel: getCoreRowModel(),
 	});
 
-	return (
-		<div className="space-y-4">
-			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold">Articles</h2>
-				<Link to="/articles/new">
-					<Button>
-						<Plus size={16} className="mr-2" />
-						New Article
-					</Button>
-				</Link>
-			</div>
+	if (loading) {
+		return <div className="p-4">Loading articles...</div>;
+	}
 
-			{loading ? (
-				<div className="flex justify-center py-8">
-					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border "></div>
-				</div>
-			) : articles.length === 0 ? (
-				<div className="text-center py-12">
-					<p className="text-gray-500 mb-4">No articles found</p>
-					<Link to="/articles/new">
-						<Button>Create your first article</Button>
-					</Link>
-				</div>
-			) : (
-				<div className="border border-border rounded-lg overflow-hidden">
-					<table className="w-full">
-						<thead className="border-b border-border">
-							{table.getHeaderGroups().map((headerGroup) => (
-								<tr key={headerGroup.id}>
-									{headerGroup.headers.map((header) => (
-										<th
-											key={header.id}
-											className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
-											{header.isPlaceholder
-												? null
-												: flexRender(
-														header.column.columnDef.header,
-														header.getContext(),
-													)}
-										</th>
-									))}
-								</tr>
-							))}
-						</thead>
-						<tbody className="divide-y divide-border">
-							{table.getRowModel().rows.map((row) => (
-								<tr key={row.id}>
-									{row.getVisibleCells().map((cell) => (
-										<td
-											key={cell.id}
-											className="px-4 py-4 whitespace-nowrap text-sm"
-										>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
+	return (
+		<div className="rounded-md border border-border">
+			<table className="w-full">
+				<thead className="bg-muted/50">
+					{table.getHeaderGroups().map((headerGroup) => (
+						<tr key={headerGroup.id}>
+							{headerGroup.headers.map((header) => (
+								<th
+									key={header.id}
+									className="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+								>
+									{header.isPlaceholder
+										? null
+										: flexRender(
+												header.column.columnDef.header,
+												header.getContext(),
 											)}
-										</td>
-									))}
-								</tr>
+								</th>
 							))}
-						</tbody>
-					</table>
-				</div>
-			)}
+						</tr>
+					))}
+				</thead>
+				<tbody>
+					{table.getRowModel().rows?.length ? (
+						table.getRowModel().rows.map((row) => (
+							<tr
+								key={row.id}
+								className="border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+							>
+								{row.getVisibleCells().map((cell) => (
+									<td key={cell.id} className="p-4 align-middle">
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</td>
+								))}
+							</tr>
+						))
+					) : (
+						<tr>
+							<td colSpan={columns.length} className="h-24 text-center">
+								No articles found.
+							</td>
+						</tr>
+					)}
+				</tbody>
+			</table>
 		</div>
 	);
 };

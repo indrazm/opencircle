@@ -1,90 +1,163 @@
 # OpenCircle
 
-OpenCircle is an open-source social learning platform that combines online education with community interaction. It allows users to enroll in courses, participate in channels, share articles, and engage through posts and reactions, fostering a collaborative learning environment.
+OpenCircle is an open-source social learning platform that combines online education with community interaction. Learn together, share knowledge, and build a vibrant learning community.
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![React 19](https://img.shields.io/badge/react-19-blue.svg)](https://react.dev/)
+
+> **Note**: This project is currently in alpha. Features and APIs may change.
 
 ## Features
 
-- **User Management**: Registration, authentication, and profile management.
-- **Courses**: Create, manage, and enroll in educational courses with lessons and sections.
-- **Channels**: Join and participate in discussion channels for community interaction.
-- **Articles and Posts**: Share and read articles, create posts, and react to content.
-- **Notifications**: Real-time notifications for user activities.
-- **Media Handling**: Upload and manage media files.
-- **Invite Codes**: Generate and use invite codes for user access.
-- **Admin Dashboard**: Comprehensive admin interface for managing content and users.
+### Core Features
+- **User Management**: Registration, authentication (including GitHub OAuth), profile management, user roles (Admin/User)
+- **Courses & Learning**: Create, manage, and enroll in educational courses with structured sections and lessons (video, text, quiz, assignment types)
+- **Channels**: Join and participate in topic-based discussion channels for community interaction
+- **Articles & Posts**: Share and read articles, create posts with mentions and URL previews, comment and reply to discussions
+- **Reactions**: React to posts and content with emoji reactions
+- **Notifications**: Real-time notifications for mentions, reactions, and user activities
+- **Media Handling**: Upload and manage media files with cloud storage support (Cloudflare R2)
+- **Invite Codes**: Generate and manage invite codes with usage limits, expiration, and auto-channel joining
+- **Admin Dashboard**: Comprehensive admin interface for managing users, content, courses, articles, channels, and app settings
+- **Broadcasting**: Admin ability to broadcast messages to users
+
+### Technical Features
+- GitHub OAuth authentication
+- Markdown support with syntax highlighting for articles and posts
+- URL preview generation for shared links
+- Mention system with autocomplete
+- Background task processing with Celery and Redis
+- Responsive design with mobile-first approach
+- Dark mode support
+- Real-time data synchronization
+
+## Technology Stack
+
+### Frontend
+- React 19 + TypeScript
+- TanStack Router & Query
+- Tailwind CSS 4
+- Radix UI Components
+
+### Backend
+- Python 3.12 + FastAPI
+- PostgreSQL + SQLModel
+- Redis + Celery
+- Cloudflare R2 Storage
+
+### DevOps
+- Docker & Docker Compose
+- pnpm + Moon (monorepo)
+- GitHub Actions CI/CD
 
 ## Architecture
 
-OpenCircle is a monorepo project structured as follows:
+OpenCircle is built as a modern monorepo with three main applications:
 
-- **Admin App** (`apps/admin/`): React-based admin interface for managing the platform.
-- **Platform App** (`apps/platform/`): React-based user-facing application for learning and social features.
-- **API** (`api/`): Python-based backend API handling data and business logic.
-- **Packages** (`packages/`): Shared components and services (e.g., UI components, core services).
+- **Platform App**: User-facing React application for learning and community
+- **Admin App**: React-based dashboard for content and user management
+- **API**: FastAPI backend with modular architecture
 
-The project uses modern technologies including React with TypeScript, TanStack Router and Query, Tailwind CSS for frontends, and Python with FastAPI for the backend.
+For detailed architecture and development patterns, see the [documentation](docs/):
+- [API Documentation](docs/api.md) - Backend architecture, modules, and patterns
+- [Admin App Documentation](docs/admin.md) - Admin interface structure and features
+- [Platform App Documentation](docs/platform.md) - User app structure and features
 
-## Installation
+## Quick Start
 
-### Prerequisites
+### Using Docker (Recommended)
 
-- Docker and Docker Compose for running the application.
-
-### Setup
-
-1. **Clone the repository**:
+1. **Clone and configure**:
    ```bash
    git clone https://github.com/devscalelabs/opencircle.git
    cd opencircle
+   cp .env.example .env
    ```
 
-2. **Set up environment variables**:
-   - Copy `.env.example` to `.env` and configure your settings (e.g., R2 storage, database credentials).
+2. **Configure environment** (edit `.env`):
+   - Cloudflare R2 credentials for media storage
+   - Database and Redis URLs (defaults work for Docker)
 
-3. **Build and start the services**:
-   - Use the Makefile commands for ease.
-
-## Usage
-
-### Running the Applications
-
-1. **Run database migrations**:
+3. **Start the platform**:
    ```bash
-   make docker-migrate
+   make docker-migrate  # Run database migrations
+   make docker-up       # Start all services
    ```
 
-2. **Start all services**:
-   ```bash
-   make docker-up
-   ```
+4. **Access the applications**:
+   - **Platform**: http://localhost:3000
+   - **Admin Dashboard**: http://localhost:4000
+   - **API Documentation**: http://localhost:8000/docs
 
-Access the applications:
-- Admin Dashboard: http://localhost:4000
-- Platform: http://localhost:3000
-- API: http://localhost:8000
-- Database Admin (Adminer): http://localhost:8080 (optional)
+### Local Development
 
-To stop the services:
+**Prerequisites**: Node.js 20+, Python 3.12+, pnpm, PostgreSQL, Redis
+
 ```bash
-make docker-down
+# Install dependencies
+pnpm install
+cd apps/api && uv sync && cd ../..
+
+# Start services
+docker compose up -d postgres redis  # Or use local instances
+cd apps/api && uv run alembic upgrade head && cd ../..
+
+# Run applications
+make dev  # Starts all apps with Moon
 ```
 
-For development, you can also use:
-```bash
-make dev
+See the [development documentation](docs/) for detailed setup instructions.
+
+## Project Structure
+
 ```
-This runs the Moon development setup.
+opencircle/
+├── apps/
+│   ├── admin/       # Admin dashboard (React + TypeScript)
+│   ├── platform/    # User platform (React + TypeScript)
+│   └── api/         # Backend API (Python + FastAPI)
+├── packages/
+│   ├── core/        # Shared TypeScript services
+│   └── ui/          # Shared React components
+├── docs/            # Documentation
+└── docker-compose.yml
+```
 
-### Building for Production
+## Documentation
 
-1. **Build the frontends**:
-   ```bash
-   pnpm --filter admin build
-   pnpm --filter platform build
-   ```
+- **[API Documentation](docs/api.md)**: Backend architecture, modules, database models, and API patterns
+- **[Admin App Documentation](docs/admin.md)**: Admin interface features, components, and workflows
+- **[Platform App Documentation](docs/platform.md)**: User app features, components, and architecture
 
-2. **Build the API** (if needed):
-   Follow Python packaging instructions in `api/`.
+## Common Commands
+
+```bash
+# Docker
+make docker-up         # Start all services
+make docker-down       # Stop all services
+make docker-migrate    # Run database migrations
+make docker-logs       # View logs
+
+# Development
+make dev              # Start dev servers
+make format           # Format code
+pnpm lint             # Lint code
+
+# Testing
+cd apps/api && uv run pytest  # Run API tests
+```
+
+## Configuration
+
+Key environment variables (see `.env.example`):
+
+- **Cloudflare R2**: Media storage configuration
+- **Database**: PostgreSQL connection details
+- **Redis**: Caching and task queue
+- **OAuth**: GitHub OAuth credentials (optional)
+
+For detailed configuration, see the [API documentation](docs/api.md#environment-variables).
 
 ## Contributing
 

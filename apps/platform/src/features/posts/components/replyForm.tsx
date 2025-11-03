@@ -8,7 +8,7 @@ import { MentionList } from "../../mention/components/MentionList";
 import { usePost } from "../hooks/usePost";
 import { usePostMention } from "../hooks/usePostMention";
 import { useReplySubmission } from "../hooks/useReplySubmission";
-import { extractMentions } from "../utils";
+import { extractMentions } from "../utils/contentParsing";
 
 interface ReplyFormProps {
 	parentId: string;

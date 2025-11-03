@@ -1,9 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArticleView } from "../../features/articles/components/ArticleView";
-import {
-	useArticle,
-	useArticleSubmission,
-} from "../../features/articles/hooks";
+import { useArticle } from "../../features/articles/hooks/useArticle";
+import { useArticleSubmission } from "../../features/articles/hooks/useArticleSubmission";
 
 export const Route = createFileRoute("/_dashboardLayout/articles/$id")({
 	component: RouteComponent,

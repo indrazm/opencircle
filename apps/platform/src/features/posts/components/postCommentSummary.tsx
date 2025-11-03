@@ -1,4 +1,4 @@
-import { formatCommentSummary } from "../utils";
+import { formatCommentSummary } from "../utils/nameFormatting";
 
 interface PostCommentSummaryProps {
 	names: string[];

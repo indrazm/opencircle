@@ -10,7 +10,7 @@ import { useAccount } from "../../auth/hooks/useAccount";
 import { UrlPreview } from "../../extras/components/UrlPreview";
 import { MediaGallery } from "../../media/components/media";
 import { usePostDelete } from "../hooks/usePostDelete";
-import { renderContent } from "../utils";
+import { renderContent } from "../utils/contentRendering";
 import { PostCardReactions } from "./postCardReactions";
 import { PostCommentSummary } from "./postCommentSummary";
 

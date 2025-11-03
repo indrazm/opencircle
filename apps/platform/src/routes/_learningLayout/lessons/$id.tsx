@@ -3,7 +3,7 @@ import MDEditor from "@uiw/react-md-editor";
 import { ArrowLeft, Zap } from "lucide-react";
 import { CourseSidebar } from "../../../features/courses/components/courseSidebar";
 import { useCourse } from "../../../features/courses/hooks/useCourse";
-import { useCheckEnrollment } from "../../../features/enrollment";
+import { useCheckEnrollment } from "../../../features/enrollment/hooks/useCheckEnrollment";
 import { useLesson } from "../../../features/lessons/hooks/useLesson";
 
 export const Route = createFileRoute("/_learningLayout/lessons/$id")({

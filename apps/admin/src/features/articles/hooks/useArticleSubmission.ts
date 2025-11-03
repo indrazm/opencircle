@@ -3,7 +3,7 @@ import { api } from "../../../utils/api";
 import type {
 	CreateArticleRequest,
 	UpdateArticleRequest,
-} from "../types/article";
+} from "../utils/types";
 
 export const useArticleSubmission = () => {
 	const queryClient = useQueryClient();

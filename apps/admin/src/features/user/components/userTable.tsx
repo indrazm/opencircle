@@ -1,5 +1,4 @@
 import type { User } from "@opencircle/core";
-import { Button } from "@opencircle/ui";
 import {
 	type ColumnDef,
 	flexRender,
@@ -7,6 +6,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
+import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface UserTableProps {
@@ -43,7 +43,7 @@ export const UserTable = ({ users, isLoading }: UserTableProps) => {
 		},
 		{
 			accessorKey: "username",
-			header: "Username + Name",
+			header: "User",
 			cell: ({ row }) => {
 				const username = row.getValue("username") as string;
 				const name = row.original.name;
@@ -88,31 +88,34 @@ export const UserTable = ({ users, isLoading }: UserTableProps) => {
 		},
 		{
 			id: "actions",
-			header: "Action",
-			cell: ({ row }) => (
-				<div className="flex gap-2">
-					<Button
-						variant="primary"
-						size="sm"
-						onClick={() => {
-							// TODO: Implement view details functionality
-							console.log("View details for:", row.original);
-						}}
-					>
-						View Details
-					</Button>
-					<Button
-						variant="secondary"
-						size="sm"
-						onClick={() => {
-							// TODO: Implement ban functionality
-							console.log("Ban user:", row.original);
-						}}
-					>
-						Ban
-					</Button>
-				</div>
-			),
+			header: "Actions",
+			cell: ({ row }) => {
+				const user = row.original;
+				return (
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							onClick={() => {
+								console.log("View details for:", user);
+							}}
+							className="p-1 hover:bg-gray-100 rounded"
+							title="View Details"
+						>
+							<Eye size={16} />
+						</button>
+						<button
+							type="button"
+							onClick={() => {
+								console.log("Ban user:", user);
+							}}
+							className="p-1 hover:bg-red-100 rounded text-red-600"
+							title="Ban"
+						>
+							<Trash2 size={16} />
+						</button>
+					</div>
+				);
+			},
 			enableSorting: false,
 		},
 	];

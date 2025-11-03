@@ -1,13 +1,11 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { ArticleEditor } from "../../features/articles/components/ArticleEditor";
-import {
-	useArticle,
-	useArticleSubmission,
-} from "../../features/articles/hooks";
+import { useArticle } from "../../features/articles/hooks/useArticle";
+import { useArticleSubmission } from "../../features/articles/hooks/useArticleSubmission";
 import type {
 	CreateArticleRequest,
 	UpdateArticleRequest,
-} from "../../features/articles/types/article";
+} from "../../features/articles/utils/types";
 
 export const Route = createFileRoute("/_dashboardLayout/articles/edit/$id")({
 	component: RouteComponent,

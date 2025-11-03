@@ -154,22 +154,25 @@ export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 			id: "actions",
 			header: "Actions",
 			cell: ({ row }) => (
-				<div className="flex gap-2">
-					<Button
-						size="sm"
+				<div className="flex items-center gap-2">
+					<button
+						type="button"
 						onClick={() => {
 							router.navigate({ to: `/courses/edit/${row.original.id}` });
 						}}
+						className="p-1 hover:bg-gray-100 rounded"
+						title="Edit"
 					>
-						<Edit className="h-4 w-4" />
-					</Button>
-					<Button
-						variant="secondary"
-						size="sm"
+						<Edit size={16} />
+					</button>
+					<button
+						type="button"
 						onClick={() => handleDeleteClick(row.original)}
+						className="p-1 hover:bg-red-100 rounded text-red-600"
+						title="Delete"
 					>
-						<Trash className="h-4 w-4" />
-					</Button>
+						<Trash size={16} />
+					</button>
 				</div>
 			),
 			enableSorting: false,

@@ -1,6 +1,5 @@
 import { Button } from "@opencircle/ui";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
 import { InviteCodeList } from "../../../features/inviteCode/components/InviteCodeList";
 import { useInviteCodeSubmission } from "../../../features/inviteCode/hooks/useInviteCodeSubmission";
 import { useInviteCodes } from "../../../features/inviteCode/hooks/useInviteCodes";
@@ -36,14 +35,11 @@ function RouteComponent() {
 	};
 
 	return (
-		<div className="space-y-6">
-			<div className="flex justify-between items-center">
-				<h1 className="text-3xl font-bold">Invite Codes</h1>
+		<main>
+			<div className="flex justify-between items-center mb-4">
+				<h1 className="text-2xl font-medium">Invite Codes</h1>
 				<Link to="/invite-codes/new">
-					<Button>
-						<Plus size={16} className="mr-2" />
-						Create New Invite Code
-					</Button>
+					<Button size="sm">Create Invite Code</Button>
 				</Link>
 			</div>
 			<InviteCodeList
@@ -52,6 +48,6 @@ function RouteComponent() {
 				onDeactivate={handleDeactivate}
 				loading={isInviteCodesLoading}
 			/>
-		</div>
+		</main>
 	);
 }

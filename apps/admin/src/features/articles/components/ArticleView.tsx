@@ -5,7 +5,7 @@ import { ArrowLeft, Calendar, Clock, Edit, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
-import type { Article } from "../types/article";
+import type { Article } from "../utils/types";
 
 interface ArticleViewProps {
 	article: Article;

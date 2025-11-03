@@ -5,7 +5,7 @@ import { useState } from "react";
 import type {
 	CreateArticleRequest,
 	UpdateArticleRequest,
-} from "../types/article";
+} from "../utils/types";
 
 interface ArticleEditorProps {
 	article?: Partial<CreateArticleRequest> & { id?: string };

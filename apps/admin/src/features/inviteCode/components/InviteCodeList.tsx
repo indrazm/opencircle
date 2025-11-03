@@ -1,6 +1,5 @@
 import type { InviteCode } from "@opencircle/core";
-import { Button } from "@opencircle/ui";
-import { Link } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import {
 	type ColumnDef,
 	flexRender,
@@ -23,6 +22,7 @@ export const InviteCodeList = ({
 	onDeactivate,
 	loading,
 }: InviteCodeListProps) => {
+	const router = useRouter();
 	const columns: ColumnDef<InviteCode>[] = [
 		{
 			accessorKey: "code",
@@ -118,14 +118,16 @@ export const InviteCodeList = ({
 				const inviteCode = row.original;
 				return (
 					<div className="flex items-center gap-2">
-						<Link
-							to="/invite-codes/edit/$id"
-							params={{ id: inviteCode.id }}
+						<button
+							type="button"
+							onClick={() => {
+								router.navigate({ to: `/invite-codes/edit/${inviteCode.id}` });
+							}}
 							className="p-1 hover:bg-gray-100 rounded"
 							title="Edit"
 						>
 							<Edit size={16} />
-						</Link>
+						</button>
 						{inviteCode.status === "active" && onDeactivate && (
 							<button
 								type="button"
@@ -158,61 +160,55 @@ export const InviteCodeList = ({
 		getCoreRowModel: getCoreRowModel(),
 	});
 
+	if (loading) {
+		return <div className="p-4">Loading invite codes...</div>;
+	}
+
 	return (
-		<div className="space-y-4">
-			{loading ? (
-				<div className="flex justify-center py-8">
-					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border "></div>
-				</div>
-			) : inviteCodes.length === 0 ? (
-				<div className="text-center py-12">
-					<p className="text-gray-500 mb-4">No invite codes found</p>
-					<Link to="/invite-codes/new">
-						<Button>Create your first invite code</Button>
-					</Link>
-				</div>
-			) : (
-				<div className="border border-border rounded-lg overflow-hidden">
-					<table className="w-full">
-						<thead className="border-b border-border">
-							{table.getHeaderGroups().map((headerGroup) => (
-								<tr key={headerGroup.id}>
-									{headerGroup.headers.map((header) => (
-										<th
-											key={header.id}
-											className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
-											{header.isPlaceholder
-												? null
-												: flexRender(
-														header.column.columnDef.header,
-														header.getContext(),
-													)}
-										</th>
-									))}
-								</tr>
-							))}
-						</thead>
-						<tbody className="divide-y divide-border">
-							{table.getRowModel().rows.map((row) => (
-								<tr key={row.id}>
-									{row.getVisibleCells().map((cell) => (
-										<td
-											key={cell.id}
-											className="px-4 py-4 whitespace-nowrap text-sm"
-										>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
+		<div className="rounded-md border border-border">
+			<table className="w-full">
+				<thead className="bg-muted/50">
+					{table.getHeaderGroups().map((headerGroup) => (
+						<tr key={headerGroup.id}>
+							{headerGroup.headers.map((header) => (
+								<th
+									key={header.id}
+									className="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
+								>
+									{header.isPlaceholder
+										? null
+										: flexRender(
+												header.column.columnDef.header,
+												header.getContext(),
 											)}
-										</td>
-									))}
-								</tr>
+								</th>
 							))}
-						</tbody>
-					</table>
-				</div>
-			)}
+						</tr>
+					))}
+				</thead>
+				<tbody>
+					{table.getRowModel().rows?.length ? (
+						table.getRowModel().rows.map((row) => (
+							<tr
+								key={row.id}
+								className="border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+							>
+								{row.getVisibleCells().map((cell) => (
+									<td key={cell.id} className="p-4 align-middle">
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</td>
+								))}
+							</tr>
+						))
+					) : (
+						<tr>
+							<td colSpan={columns.length} className="h-24 text-center">
+								No invite codes found.
+							</td>
+						</tr>
+					)}
+				</tbody>
+			</table>
 		</div>
 	);
 };

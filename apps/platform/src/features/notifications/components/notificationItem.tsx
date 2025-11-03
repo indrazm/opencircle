@@ -2,8 +2,8 @@ import type { Notification } from "@opencircle/core";
 import { Avatar, Button } from "@opencircle/ui";
 import { useNavigate } from "@tanstack/react-router";
 import moment from "moment";
-import { renderContent } from "../../posts/utils";
-import { useMarkNotificationAsRead } from "../hooks";
+import { renderContent } from "../../posts/utils/contentRendering";
+import { useMarkNotificationAsRead } from "../hooks/useNotifications";
 
 interface NotificationItemProps {
 	notification: Notification;

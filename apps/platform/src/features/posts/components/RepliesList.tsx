@@ -9,7 +9,7 @@ import { getInitials } from "../../../utils/common";
 import { useAccount } from "../../auth/hooks/useAccount";
 import { MediaGallery } from "../../media/components/media";
 import { usePostDelete } from "../hooks/usePostDelete";
-import { renderContent } from "../utils";
+import { renderContent } from "../utils/contentRendering";
 import { PostCardReactions } from "./postCardReactions";
 import { ReplyForm } from "./replyForm";
 
