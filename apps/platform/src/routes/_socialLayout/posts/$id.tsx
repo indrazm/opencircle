@@ -35,7 +35,6 @@ function PostDetail() {
 	}
 
 	const initials = getInitials(post.user.username);
-	console.log(post);
 
 	return (
 		<main>
