@@ -5,6 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session
 
 from src.api.account.api import get_current_user
+from src.api.resources.serializer import ResourceResponse
 from src.database.engine import get_session as get_db
 from src.database.models import User
 from src.modules.channels.channels_methods import (
@@ -12,7 +13,11 @@ from src.modules.channels.channels_methods import (
     delete_channel,
     get_all_channels,
     get_channel,
+    is_member,
     update_channel,
+)
+from src.modules.resources.resources_methods import (
+    get_resources_by_channel,
 )
 
 from .serializer import ChannelCreate, ChannelResponse, ChannelUpdate
@@ -144,3 +149,26 @@ def delete_channel_endpoint(
     if not delete_channel(db, channel_id):
         raise HTTPException(status_code=404, detail="Channel not found")
     return {"message": "Channel deleted"}
+
+
+@router.get(
+    "/channels/{channel_slug}/resources/", response_model=List[ResourceResponse]
+)
+def get_resources_by_channel_endpoint(
+    channel_slug: str,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional),
+):
+    from src.modules.channels.channels_methods import get_channel_by_slug
+
+    channel = get_channel_by_slug(db, channel_slug)
+    if not channel:
+        raise HTTPException(status_code=404, detail="Channel not found")
+
+    if channel.type == "private":
+        if not current_user or not is_member(db, channel.id, current_user.id):
+            raise HTTPException(
+                status_code=403, detail="Access denied to private channel"
+            )
+
+    return get_resources_by_channel(db, channel.id)

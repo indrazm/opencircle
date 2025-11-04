@@ -7,12 +7,13 @@ from sqlmodel import Session
 from src.api.account.api import get_current_user
 from src.database.engine import get_session as get_db
 from src.database.models import User
+from src.modules.channels.channels_methods import is_member
 from src.modules.resources.resources_methods import (
     create_resource,
     delete_resource,
+    filter_private_channel_resources,
     get_all_resources,
     get_resource,
-    get_resources_by_channel,
     get_resources_by_user,
     update_resource,
 )
@@ -59,7 +60,7 @@ def create_resource_endpoint(
     current_user: User = Depends(get_current_user),
 ):
     # Verify channel exists and user has access
-    from src.modules.channels.channels_methods import get_channel, is_member
+    from src.modules.channels.channels_methods import get_channel
 
     channel = get_channel(db, resource.channel_id)
     if not channel:
@@ -111,20 +112,10 @@ def get_all_resources_endpoint(
     db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user_optional),
 ):
-    # Get all resources but filter based on channel access
     all_resources = get_all_resources(db, skip, limit)
-
-    filtered_resources = []
-    for resource in all_resources:
-        if resource.channel.type == "public":
-            filtered_resources.append(resource)
-        elif current_user and resource.channel.type == "private":
-            from src.modules.channels.channels_methods import is_member
-
-            if is_member(db, resource.channel_id, current_user.id):
-                filtered_resources.append(resource)
-
-    return filtered_resources
+    return filter_private_channel_resources(
+        all_resources, current_user_id=current_user.id if current_user else None, db=db
+    )
 
 
 @router.get("/users/{user_id}/resources/", response_model=List[ResourceResponse])
@@ -134,41 +125,9 @@ def get_resources_by_user_endpoint(
     current_user: Optional[User] = Depends(get_current_user_optional),
 ):
     resources = get_resources_by_user(db, user_id)
-
-    # Filter based on channel access
-    filtered_resources = []
-    for resource in resources:
-        if resource.channel.type == "public":
-            filtered_resources.append(resource)
-        elif current_user and resource.channel.type == "private":
-            from src.modules.channels.channels_methods import is_member
-
-            if is_member(db, resource.channel_id, current_user.id):
-                filtered_resources.append(resource)
-
-    return filtered_resources
-
-
-@router.get("/channels/{channel_id}/resources/", response_model=List[ResourceResponse])
-def get_resources_by_channel_endpoint(
-    channel_id: str,
-    db: Session = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional),
-):
-    # Check channel access
-    from src.modules.channels.channels_methods import get_channel, is_member
-
-    channel = get_channel(db, channel_id)
-    if not channel:
-        raise HTTPException(status_code=404, detail="Channel not found")
-
-    if channel.type == "private":
-        if not current_user or not is_member(db, channel_id, current_user.id):
-            raise HTTPException(
-                status_code=403, detail="Access denied to private channel"
-            )
-
-    return get_resources_by_channel(db, channel_id)
+    return filter_private_channel_resources(
+        resources, current_user_id=current_user.id if current_user else None, db=db
+    )
 
 
 @router.put("/resources/{resource_id}", response_model=ResourceResponse)

@@ -6,6 +6,32 @@ from sqlmodel import Session, desc, select
 from src.database.models import Resource
 
 
+def filter_private_channel_resources(
+    resources: list[Resource],
+    current_user_id: Optional[str] = None,
+    db: Optional[Session] = None,
+) -> list[Resource]:
+    """Filter out resources from private channels where user is not a member."""
+    filtered_resources = []
+    for resource in resources:
+        # If resource's channel is public, include it
+        if resource.channel.type != "private":
+            filtered_resources.append(resource)
+            continue
+
+        # If channel is private and user is not provided, exclude the resource
+        if not current_user_id or not db:
+            continue
+
+        # If channel is private, check if user is a member
+        from src.modules.channels.channels_methods import is_member
+
+        if is_member(db, resource.channel_id, current_user_id):
+            filtered_resources.append(resource)
+
+    return filtered_resources
+
+
 def create_resource(db: Session, resource_data: dict) -> Resource:
     """Create a new resource."""
     resource = Resource(**resource_data)
