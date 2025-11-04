@@ -9,52 +9,50 @@ import { useUser } from "../../features/user/hooks/useUser";
 import { getInitials } from "../../utils/common";
 
 export const Route = createFileRoute("/_socialLayout/$username")({
-	head: (): {
-		meta: Array<Record<string, any>>;
-		links: Array<Record<string, any>>;
-	} => {
-		const username = Route.useParams().username;
-		return {
-			meta: [
-				{
-					title: `${username} - OpenCircle`,
-				},
-				{
-					name: "description",
-					content: `View ${username}'s profile on OpenCircle`,
-				},
-				{
-					property: "og:title",
-					content: `${username} - OpenCircle`,
-				},
-				{
-					property: "og:description",
-					content: `View ${username}'s profile on OpenCircle`,
-				},
-				{
-					property: "og:image",
-					content: METADATA.ogImage,
-				},
-			],
-			links: [
-				{
-					rel: "icon",
-					href: METADATA.favicon,
-				},
-			],
-		};
-	},
+	head: (opts) => ({
+		meta: [
+			{
+				title: `${opts.params.username} - OpenCircle`,
+			},
+			{
+				name: "description",
+				content: `View ${opts.params.username}'s profile on OpenCircle`,
+			},
+			{
+				property: "og:title",
+				content: `${opts.params.username} - OpenCircle`,
+			},
+			{
+				property: "og:description",
+				content: `View ${opts.params.username}'s profile on OpenCircle`,
+			},
+			{
+				property: "og:image",
+				content: METADATA.ogImage,
+			},
+		],
+		links: [
+			{
+				rel: "icon",
+				href: METADATA.favicon,
+			},
+		],
+	}),
 	component: UserDetail,
 });
 
 function UserDetail() {
-	const username = Route.useParams().username;
-	const { user } = useUser(username);
+	const { username } = Route.useParams();
+	const { user, isUserLoading } = useUser(username);
 	const { posts } = usePosts({ userId: user?.id });
 	const gradientId = useId();
 
+	if (isUserLoading) {
+		return <div className="p-4">Loading user...</div>;
+	}
+
 	if (!user) {
-		return <div>User not found</div>;
+		return <div className="p-4">User not found</div>;
 	}
 
 	const initials = getInitials(user.name);

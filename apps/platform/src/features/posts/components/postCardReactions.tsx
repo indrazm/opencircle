@@ -22,7 +22,6 @@ export const PostCardReactions = ({ post }: PostCardReactionsProps) => {
 			try {
 				setLoading(true);
 				const data = await api.reactions.getByPostId(post.id);
-				console.log("Fetched reactions:", data);
 				setReactionDetails(data);
 			} catch (error) {
 				console.error("Failed to fetch reactions:", error);
