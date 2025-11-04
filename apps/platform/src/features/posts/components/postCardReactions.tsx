@@ -106,7 +106,7 @@ export const PostCardReactions = ({ post }: PostCardReactionsProps) => {
 												Loading...
 											</div>
 										) : (
-											<div className="flex max-h-[250px] flex-col gap-1 overflow-y-auto">
+											<div className="flex flex-col gap-1">
 												{reactionDetails.map((reactionGroup) =>
 													reactionGroup.users.map((reaction_user) => (
 														<div
