@@ -1,6 +1,6 @@
 import type { AppSettingsUpdate } from "@opencircle/core";
 import { Button, Input } from "@opencircle/ui";
-import { Save, Settings, Upload } from "lucide-react";
+import { Save, Settings, Upload, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import toast from "react-hot-toast";
 import { useAppSettings } from "../hooks/useAppSettings";
@@ -49,7 +49,7 @@ export function AppSettings() {
 		try {
 			const updateData: AppSettingsUpdate = {
 				app_name: formData.app_name,
-				app_logo_url: formData.app_logo_url || undefined,
+				app_logo_url: formData.app_logo_url || null,
 				enable_sign_up: formData.enable_sign_up,
 			};
 
@@ -76,6 +76,10 @@ export function AppSettings() {
 			};
 			reader.readAsDataURL(file);
 		}
+	};
+
+	const handleDeleteLogo = () => {
+		handleInputChange("app_logo_url", "");
 	};
 
 	if (isAppSettingsLoading) {
@@ -153,12 +157,15 @@ export function AppSettings() {
 							className="hidden"
 						/>
 						{formData.app_logo_url && (
-							<div className="mt-2">
+							<div className="mt-2 flex items-center gap-3">
 								<img
 									src={formData.app_logo_url}
 									alt="Logo preview"
 									className="h-16 w-16 rounded border object-contain"
 								/>
+								<Button type="button" size="sm" onClick={handleDeleteLogo}>
+									<X className="h-4 w-4" />
+								</Button>
 							</div>
 						)}
 					</div>
