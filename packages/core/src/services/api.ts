@@ -11,6 +11,7 @@ import { MediaRouter } from "./routers/media";
 import { NotificationsRouter } from "./routers/notifications";
 import { PostsRouter } from "./routers/posts";
 import { ReactionsRouter } from "./routers/reactions";
+import { ResourcesRouter } from "./routers/resources";
 import { UsersRouter } from "./routers/users";
 
 export class Api {
@@ -27,6 +28,7 @@ export class Api {
 	public extras: ExtrasRouter;
 	public inviteCodes: InviteCodesRouter;
 	public notifications: NotificationsRouter;
+	public resources: ResourcesRouter;
 
 	constructor(baseUrl: string, hooks?: Hooks) {
 		this.users = new UsersRouter(baseUrl, hooks);
@@ -42,6 +44,7 @@ export class Api {
 		this.extras = new ExtrasRouter(baseUrl, hooks);
 		this.inviteCodes = new InviteCodesRouter(baseUrl, hooks);
 		this.notifications = new NotificationsRouter(baseUrl, hooks);
+		this.resources = new ResourcesRouter(baseUrl, hooks);
 	}
 }
 
@@ -96,6 +99,9 @@ export type {
 	ReactionCreate,
 	RegisterRequest,
 	RegisterResponse,
+	Resource,
+	ResourceCreate,
+	ResourceUpdate,
 	Role,
 	Section,
 	SectionCreate,

@@ -18,6 +18,7 @@ from src.api.media.api import router as media_router
 from src.api.notifications.api import router as notifications_router
 from src.api.post.api import router as post_router
 from src.api.reaction.api import router as reaction_router
+from src.api.resources.api import router as resources_router
 from src.api.user.api import router as user_router
 from src.database.engine import get_session
 from src.modules.appsettings import appsettings_methods
@@ -78,6 +79,7 @@ app.include_router(article_router, prefix="/api", tags=["articles"])
 app.include_router(extras_router, prefix="/api", tags=["extras"])
 app.include_router(invite_code_router, prefix="/api", tags=["invite-codes"])
 app.include_router(notifications_router, prefix="/api", tags=["notifications"])
+app.include_router(resources_router, prefix="/api", tags=["resources"])
 app.include_router(appsettings_router, prefix="/api/appsettings", tags=["appsettings"])
 
 

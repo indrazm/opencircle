@@ -5,6 +5,7 @@ import {
 	FileText,
 	Hash,
 	Key,
+	Link as LinkIcon,
 	Settings,
 	Users,
 	Zap,
@@ -53,6 +54,11 @@ export const Sidebar = () => {
 					icon={<FileText size={20} />}
 					label="Articles"
 					to="/articles"
+				/>
+				<MenuItem
+					icon={<LinkIcon size={20} />}
+					label="Resources"
+					to="/resources"
 				/>
 				<MenuItem
 					icon={<Settings size={20} />}

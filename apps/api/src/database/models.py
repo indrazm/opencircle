@@ -90,6 +90,9 @@ class User(BaseModel, table=True):
     medias: List["Media"] = Relationship(
         sa_relationship=relationship("Media", back_populates="user")
     )
+    resources: List["Resource"] = Relationship(
+        sa_relationship=relationship("Resource", back_populates="user")
+    )
     channel_members: List["ChannelMember"] = Relationship(
         sa_relationship=relationship("ChannelMember", back_populates="user")
     )
@@ -231,6 +234,9 @@ class Channel(BaseModel, table=True):
     posts: List["Post"] = Relationship(
         sa_relationship=relationship("Post", back_populates="channel")
     )
+    resources: List["Resource"] = Relationship(
+        sa_relationship=relationship("Resource", back_populates="channel")
+    )
 
 
 class ChannelMember(BaseModel, table=True):
@@ -364,6 +370,19 @@ class UrlPreview(BaseModel, table=True):
     title: str | None = Field(default=None)
     description: str | None = Field(default=None)
     image_url: str | None = Field(default=None)
+
+
+class Resource(BaseModel, table=True):
+    url: str = Field(index=True)
+    description: str | None = Field(default=None)
+    user_id: str = Field(foreign_key="user.id")
+    channel_id: str = Field(foreign_key="channel.id")
+    user: "User" = Relationship(
+        sa_relationship=relationship("User", back_populates="resources")
+    )
+    channel: "Channel" = Relationship(
+        sa_relationship=relationship("Channel", back_populates="resources")
+    )
 
 
 class AppSettings(BaseModel, table=True):

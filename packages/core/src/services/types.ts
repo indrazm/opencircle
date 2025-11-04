@@ -11,3 +11,4 @@ export * from "./routers/media/types";
 export * from "./routers/notifications/types";
 export * from "./routers/posts/types";
 export * from "./routers/reactions/types";
+export * from "./routers/resources/types";
