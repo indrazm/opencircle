@@ -93,8 +93,8 @@ export const PostCardReactions = ({ post }: PostCardReactionsProps) => {
 							className="z-[999999] w-[280px] rounded-md border border-border bg-background shadow-2xl shadow-black"
 							sideOffset={5}
 						>
-							<ScrollArea.Root className="max-h-[225px]">
-								<ScrollArea.Viewport className="w-full p-4">
+							<ScrollArea.Root className="h-[225px] w-[280px] overflow-hidden rounded">
+								<ScrollArea.Viewport className="size-full p-4">
 									<div className="flex flex-col gap-2">
 										<div className="mb-1 font-semibold text-muted-foreground text-xs">
 											{totalReactions}{" "}
@@ -128,6 +128,12 @@ export const PostCardReactions = ({ post }: PostCardReactionsProps) => {
 										)}
 									</div>
 								</ScrollArea.Viewport>
+								<ScrollArea.Scrollbar
+									orientation="vertical"
+									className="flex touch-none select-none bg-border/50 p-0.5"
+								>
+									<ScrollArea.Thumb className="relative flex-1 rounded-full bg-border" />
+								</ScrollArea.Scrollbar>
 							</ScrollArea.Root>
 							<HoverCard.Arrow className="fill-background" />
 						</HoverCard.Content>
