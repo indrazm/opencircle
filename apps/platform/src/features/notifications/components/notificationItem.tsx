@@ -93,11 +93,13 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
 					)}
 				</div>
 			</div>
-			<div className="pr-4 pb-4 pl-12">
-				<p className="rounded-lg border border-border bg-background-secondary p-3">
-					{renderContent(notification.data?.content || "")}
-				</p>
-			</div>
+			{hasPostId && (
+				<div className="pr-4 pb-4 pl-12">
+					<p className="rounded-lg border border-border bg-background-secondary p-3">
+						{renderContent(notification.data?.content || "")}
+					</p>
+				</div>
+			)}
 		</main>
 	);
 };
