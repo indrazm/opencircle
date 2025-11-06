@@ -46,6 +46,9 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
 		}
 	};
 
+	const isContentNotification = ["mention", "reply"].includes(
+		notification.type,
+	);
 	const hasPostId = Boolean(notification.data?.post_id);
 
 	return (
@@ -68,7 +71,7 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
 					</p>
 				</div>
 				<div className="flex items-start gap-2">
-					{hasPostId && (
+					{hasPostId && !isContentNotification && (
 						<Button
 							variant="secondary"
 							size="sm"
@@ -94,7 +97,7 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
 					)}
 				</div>
 			</div>
-			{hasPostId && (
+			{isContentNotification && (
 				<div className="pr-4 pb-4 pl-12">
 					<p className="rounded-lg border border-border bg-background-secondary p-3">
 						{renderContent(notification.data?.content || "")}
