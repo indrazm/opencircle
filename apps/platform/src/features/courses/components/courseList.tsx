@@ -21,51 +21,55 @@ export const CourseList = () => {
 							onClick={() => navigate({ to: `/courses/${course.id}` })}
 							className="cursor-pointer"
 						>
-							<div className="space-y-2">
+							<div>
 								{course.thumbnail_url && (
 									<img
 										src={course.thumbnail_url}
 										alt={course.title}
-										className="h-48 w-full rounded-lg object-cover"
+										className="h-48 w-full rounded-t-lg object-cover"
 									/>
 								)}
-								<h3 className="font-medium text-foreground text-lg">
-									{course.title}
-								</h3>
-								{course.description && (
-									<p className="line-clamp-2 text-foreground/70 text-sm">
-										{course.description}
-									</p>
-								)}
-								<div className="flex items-center gap-4 text-foreground/50 text-xs">
-									<span className="capitalize">Status: {course.status}</span>
-									{course.price !== undefined && (
-										<span>
-											{course.price === 0 ? "Free" : `$${course.price}`}
-										</span>
+								<section className="space-y-2 rounded-b-lg bg-background-secondary/50 p-4">
+									<h3 className="font-medium text-foreground text-lg">
+										{course.title}
+									</h3>
+									{course.description && (
+										<p className="line-clamp-2 text-foreground/70 text-sm">
+											{course.description}
+										</p>
 									)}
-									<span>{course.sections.length} sections</span>
-								</div>
+									<div className="flex items-center gap-4 text-foreground/50 text-xs">
+										<span className="capitalize">Status: {course.status}</span>
+										{course.price !== undefined && (
+											<span>
+												{course.price === 0 || !course.price
+													? "Free"
+													: `$${course.price}`}
+											</span>
+										)}
+										<span>{course.sections.length} sections</span>
+									</div>
+									<section className="mt-4 flex items-center gap-2">
+										<Avatar
+											initials={initials}
+											image_url={course.instructor.avatar_url || ""}
+										/>
+										<Link
+											to="/$username"
+											params={{ username: course.instructor.username }}
+											className="group"
+										>
+											<div className="space-y-0.5">
+												<div className="group-hover:underline">
+													{course.instructor.name || course.instructor.email}
+												</div>
+												<p className="text-foreground/50 text-xs">Instructor</p>
+											</div>
+										</Link>
+									</section>
+								</section>
 							</div>
 						</div>
-						<section className="mt-4 flex items-center gap-2">
-							<Avatar
-								initials={initials}
-								image_url={course.instructor.avatar_url || ""}
-							/>
-							<Link
-								to="/$username"
-								params={{ username: course.instructor.username }}
-								className="group"
-							>
-								<div className="space-y-0.5">
-									<div className="group-hover:underline">
-										{course.instructor.name || course.instructor.email}
-									</div>
-									<p className="text-foreground/50 text-xs">Instructor</p>
-								</div>
-							</Link>
-						</section>
 					</main>
 				);
 			})}

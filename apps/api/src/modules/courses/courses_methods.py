@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from sqlalchemy.orm import selectinload
-from sqlmodel import Session, select
+from sqlmodel import Session, desc, select
 
 from src.database.models import (
     Course,
@@ -88,7 +88,9 @@ def get_all_courses(
     current_user: Optional[User] = None,
 ) -> List[Course]:
     """Get all courses with pagination and optional filters."""
-    statement = select(Course).offset(skip).limit(limit)
+    statement = (
+        select(Course).order_by(desc(Course.created_at)).offset(skip).limit(limit)
+    )
 
     if instructor_id:
         statement = statement.where(Course.instructor_id == instructor_id)
