@@ -38,10 +38,14 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
 		}
 	};
 
+	console.log(notification);
+
 	const handleViewPost = () => {
 		const postId = notification.data?.post_id as string;
 		if (postId) {
 			handleMarkAsRead();
+			// TODO: Navigate to parent post instead of the comment itself
+			// This may require fetching the post to get its parent_id first
 			navigate({ to: "/posts/$id", params: { id: postId } });
 		}
 	};
