@@ -45,6 +45,7 @@ class PostType(str, Enum):
     POST = "post"
     COMMENT = "comment"
     ARTICLE = "article"
+    POLL = "poll"
 
 
 class InviteCode(BaseModel, table=True):
@@ -99,6 +100,9 @@ class User(BaseModel, table=True):
 
     reactions: List["Reaction"] = Relationship(
         sa_relationship=relationship("Reaction", back_populates="user")
+    )
+    poll_votes: List["PollVote"] = Relationship(
+        sa_relationship=relationship("PollVote", back_populates="user")
     )
     sent_notifications: List["Notification"] = Relationship(
         sa_relationship=relationship(
@@ -177,6 +181,10 @@ class Post(BaseModel, table=True):
 
     reactions: List["Reaction"] = Relationship(
         sa_relationship=relationship("Reaction", back_populates="post")
+    )
+
+    poll: Optional["Poll"] = Relationship(
+        sa_relationship=relationship("Poll", back_populates="post", uselist=False)
     )
 
     @hybrid_property
@@ -272,6 +280,59 @@ class Reaction(BaseModel, table=True):
     )
     post: "Post" = Relationship(
         sa_relationship=relationship("Post", back_populates="reactions")
+    )
+
+
+class Poll(BaseModel, table=True):
+    __tablename__ = "poll"
+
+    post_id: str = Field(foreign_key="post.id", unique=True)
+    duration_hours: int = Field(default=24)
+    is_active: bool = Field(default=True)
+    total_votes: int = Field(default=0)
+
+    post: "Post" = Relationship(
+        sa_relationship=relationship("Post", back_populates="poll", uselist=False)
+    )
+    options: List["PollOption"] = Relationship(
+        sa_relationship=relationship("PollOption", back_populates="poll", order_by="PollOption.order")
+    )
+    votes: List["PollVote"] = Relationship(
+        sa_relationship=relationship("PollVote", back_populates="poll")
+    )
+
+
+class PollOption(BaseModel, table=True):
+    __tablename__ = "poll_option"
+
+    poll_id: str = Field(foreign_key="poll.id")
+    text: str
+    order: int = Field(default=0)
+    vote_count: int = Field(default=0)
+
+    poll: "Poll" = Relationship(
+        sa_relationship=relationship("Poll", back_populates="options")
+    )
+    votes: List["PollVote"] = Relationship(
+        sa_relationship=relationship("PollVote", back_populates="option")
+    )
+
+
+class PollVote(BaseModel, table=True):
+    __tablename__ = "poll_vote"
+
+    poll_id: str = Field(foreign_key="poll.id")
+    option_id: str = Field(foreign_key="poll_option.id")
+    user_id: str = Field(foreign_key="user.id")
+
+    poll: "Poll" = Relationship(
+        sa_relationship=relationship("Poll", back_populates="votes")
+    )
+    option: "PollOption" = Relationship(
+        sa_relationship=relationship("PollOption", back_populates="votes")
+    )
+    user: "User" = Relationship(
+        sa_relationship=relationship("User", back_populates="poll_votes")
     )
 
 
