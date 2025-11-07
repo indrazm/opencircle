@@ -295,7 +295,9 @@ class Poll(BaseModel, table=True):
         sa_relationship=relationship("Post", back_populates="poll", uselist=False)
     )
     options: List["PollOption"] = Relationship(
-        sa_relationship=relationship("PollOption", back_populates="poll", order_by="PollOption.order")
+        sa_relationship=relationship(
+            "PollOption", back_populates="poll", order_by="PollOption.order"
+        )
     )
     votes: List["PollVote"] = Relationship(
         sa_relationship=relationship("PollVote", back_populates="poll")
