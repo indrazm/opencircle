@@ -2,13 +2,15 @@ import { Button } from "@opencircle/ui";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react";
-import { ChevronDown, Hash, Image, Smile } from "lucide-react";
+import { BarChart3, ChevronDown, Hash, Image, Smile } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { useAccount } from "../../auth/hooks/useAccount";
 import { useChannels } from "../../channels/hooks/useChannels";
 import { MentionList } from "../../mention/components/MentionList";
+import { PollForm } from "../../polls/components/pollForm";
+import { usePollSubmission } from "../../polls/hooks/usePollSubmission";
 import { useAutoResizeTextarea } from "../hooks/useAutoResizeTextarea";
 import { usePostMention } from "../hooks/usePostMention";
 import { usePostSubmission } from "../hooks/usePostSubmission";
@@ -29,7 +31,9 @@ export const PostForm = () => {
 	const [files, setFiles] = useState<File[]>([]);
 	const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 	const [selectedChannel, setSelectedChannel] = useState<string>("");
+	const [showPollForm, setShowPollForm] = useState(false);
 	const { createPost, isSubmitting } = usePostSubmission();
+	const { createPoll, isSubmitting: isPollSubmitting } = usePollSubmission();
 	const { account } = useAccount();
 	const { channels, isChannelsLoading } = useChannels();
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,7 +83,32 @@ export const PostForm = () => {
 
 	useAutoResizeTextarea(textareaRef, 7);
 
+	const handlePollSubmit = async (data: {
+		content: string;
+		options: { text: string; order?: number }[];
+		durationHours: number;
+	}) => {
+		if (!account?.id) return;
+
+		await createPoll({
+			content: data.content,
+			userId: account.id,
+			channelId: selectedChannel || undefined,
+			options: data.options,
+			durationHours: data.durationHours,
+		});
+
+		// Reset form
+		setContent("");
+		setFiles([]);
+		setPreviewUrls([]);
+		setSelectedChannel("");
+		setShowPollForm(false);
+	};
+
 	const handleSubmit = () => {
+		if (showPollForm) return; // Let poll form handle submission
+
 		if ((!content.trim() && files.length === 0) || !account?.id) return;
 
 		createPost({
@@ -153,16 +182,42 @@ export const PostForm = () => {
 
 	return (
 		<div className="relative space-y-4 border-border border-b p-4">
-			<textarea
-				ref={textareaRef}
-				value={content}
-				onChange={handleContentChange}
-				onKeyDown={handleKeyDown}
-				onPaste={handlePaste}
-				rows={4}
-				placeholder="Write your post here"
-				className="block w-full resize-none focus-within:outline-none"
-			></textarea>
+			{showPollForm ? (
+				<PollForm
+					onSubmit={handlePollSubmit}
+					onClose={() => setShowPollForm(false)}
+					isSubmitting={isPollSubmitting}
+				/>
+			) : (
+				<>
+					<textarea
+						ref={textareaRef}
+						value={content}
+						onChange={handleContentChange}
+						onKeyDown={handleKeyDown}
+						onPaste={handlePaste}
+						rows={4}
+						placeholder="Write your post here"
+						className="block w-full resize-none focus-within:outline-none"
+					></textarea>
+
+					{showMentions && !isLoading && (
+						<MentionList
+							users={users}
+							onSelect={handleMentionSelect}
+							selectedIndex={selectedIndex}
+							textareaRef={textareaRef}
+							cursorPosition={cursorPosition}
+						/>
+					)}
+
+					<PostFormMediaPreview
+						files={files}
+						previewUrls={previewUrls}
+						onRemoveFile={removeFile}
+					/>
+				</>
+			)}
 
 			{showMentions && !isLoading && (
 				<MentionList
@@ -193,10 +248,22 @@ export const PostForm = () => {
 					<button
 						type="button"
 						onClick={() => fileInputRef.current?.click()}
-						disabled={files.length >= 4}
+						disabled={files.length >= 4 || showPollForm}
 						className="text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<Image strokeWidth={1.5} size={18} />
+					</button>
+					<button
+						type="button"
+						onClick={() => setShowPollForm(!showPollForm)}
+						disabled={files.length > 0}
+						className={`${
+							showPollForm
+								? "text-primary"
+								: "text-muted-foreground hover:text-foreground"
+						} disabled:cursor-not-allowed disabled:opacity-50`}
+					>
+						<BarChart3 strokeWidth={1.5} size={18} />
 					</button>
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger>
@@ -250,10 +317,19 @@ export const PostForm = () => {
 				<Button
 					onClick={handleSubmit}
 					disabled={
-						(!content.trim() && files.length === 0) || isSubmitting || !account
+						showPollForm ||
+						(!content.trim() && files.length === 0) ||
+						isSubmitting ||
+						!account
 					}
 				>
-					{isSubmitting ? "Creating..." : "Create Post"}
+					{showPollForm
+						? isPollSubmitting
+							? "Creating Poll..."
+							: "Create Poll"
+						: isSubmitting
+							? "Creating..."
+							: "Create Post"}
 				</Button>
 			</div>
 		</div>

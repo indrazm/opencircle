@@ -62,7 +62,7 @@ def get_current_user_optional(
 
 def build_post_response_data(post, current_user_id: Optional[str], db: Session) -> dict:
     """Helper function to build post response data with relationships and reactions."""
-    return {
+    response_data = {
         "id": post.id,
         "content": post.content,
         "type": post.type,
@@ -80,6 +80,30 @@ def build_post_response_data(post, current_user_id: Optional[str], db: Session) 
         "reactions": get_reactions_summary(db, post.id, current_user_id),
         "comment_summary": get_comment_summary(db, post.id, current_user_id),
     }
+
+    # Include poll data if this is a poll post
+    if post.type == "poll":
+        from src.modules.poll.poll_methods import get_poll_by_post_id, get_user_vote
+
+        poll = get_poll_by_post_id(db, post.id)
+        if poll and current_user_id:
+            # Build poll response data with user vote
+            poll_data = {
+                "id": poll.id,
+                "post_id": poll.post_id,
+                "duration_hours": poll.duration_hours,
+                "is_active": poll.is_active,
+                "total_votes": poll.total_votes,
+                "created_at": poll.created_at,
+                "updated_at": poll.updated_at,
+                "options": poll.options,
+                "user_vote": get_user_vote(db, poll.id, current_user_id),
+            }
+            response_data["poll"] = poll_data
+        else:
+            response_data["poll"] = poll
+
+    return response_data
 
 
 @router.post("/posts/", response_model=PostResponse)

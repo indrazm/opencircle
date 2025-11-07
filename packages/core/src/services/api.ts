@@ -9,6 +9,7 @@ import { ExtrasRouter } from "./routers/extras";
 import { InviteCodesRouter } from "./routers/invite-codes";
 import { MediaRouter } from "./routers/media";
 import { NotificationsRouter } from "./routers/notifications";
+import { PollsRouter } from "./routers/polls";
 import { PostsRouter } from "./routers/posts";
 import { ReactionsRouter } from "./routers/reactions";
 import { ResourcesRouter } from "./routers/resources";
@@ -20,6 +21,7 @@ export class Api {
 	public appSettings: AppSettingsRouter;
 	public channels: ChannelsRouter;
 	public posts: PostsRouter;
+	public poll: PollsRouter;
 	public media: MediaRouter;
 	public account: AccountRouter;
 	public reactions: ReactionsRouter;
@@ -36,6 +38,7 @@ export class Api {
 		this.appSettings = new AppSettingsRouter(baseUrl, hooks);
 		this.channels = new ChannelsRouter(baseUrl, hooks);
 		this.posts = new PostsRouter(baseUrl, hooks);
+		this.poll = new PollsRouter(baseUrl, hooks);
 		this.media = new MediaRouter(baseUrl, hooks);
 		this.account = new AccountRouter(baseUrl, hooks);
 		this.reactions = new ReactionsRouter(baseUrl, hooks);

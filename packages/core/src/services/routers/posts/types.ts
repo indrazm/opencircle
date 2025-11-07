@@ -1,11 +1,13 @@
 import type { User } from "../auth/types";
 import type { Channel } from "../channels/types";
 import type { Media } from "../media/types";
+import type { Poll } from "../polls/types";
 
 export const PostType = {
 	POST: "post",
 	COMMENT: "comment",
 	ARTICLE: "article",
+	POLL: "poll",
 } as const;
 
 export type PostType = (typeof PostType)[keyof typeof PostType];
@@ -39,6 +41,7 @@ export interface Post {
 	user: User;
 	channel?: Channel;
 	medias: Media[];
+	poll?: Poll;
 	comment_count: number;
 	reaction_count: number;
 	reactions?: ReactionSummary;

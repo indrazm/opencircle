@@ -9,6 +9,7 @@ import { METADATA } from "../../../constants/metadata";
 import { useAccount } from "../../../features/auth/hooks/useAccount";
 import { UrlPreview } from "../../../features/extras/components/UrlPreview";
 import { MediaGallery } from "../../../features/media/components/media";
+import { PollCard } from "../../../features/polls/components/pollCard";
 import { PostCardReactions } from "../../../features/posts/components/postCardReactions";
 import { RepliesList } from "../../../features/posts/components/RepliesList";
 import { ReplyForm } from "../../../features/posts/components/replyForm";
@@ -69,6 +70,33 @@ function PostDetail() {
 		return <div>Post not found</div>;
 	}
 
+	// If this is a poll post, render the PollCard component
+	if (post.type === "poll") {
+		return (
+			<main>
+				<Header label="Back" />
+				<PollCard post={post} />
+				<div className="max-w-2xl border-border border-b px-6 py-4">
+					<section className="flex items-center gap-4">
+						<Button
+							variant="secondary"
+							onClick={() => setShowReplyForm(!showReplyForm)}
+							disabled={!account}
+						>
+							Reply
+						</Button>
+						<PostCardReactions post={post} />
+					</section>
+				</div>
+				{showReplyForm && (
+					<ReplyForm parentId={id} onReply={() => setShowReplyForm(false)} />
+				)}
+				<RepliesList posts={posts} />
+			</main>
+		);
+	}
+
+	// Otherwise render the regular post detail
 	const initials = getInitials(post.user.username);
 
 	return (

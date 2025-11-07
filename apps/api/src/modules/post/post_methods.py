@@ -6,7 +6,16 @@ from sqlalchemy import Column, desc, text
 from sqlalchemy.orm import joinedload
 from sqlmodel import Session, select
 
-from src.database.models import Channel, Media, Post, Reaction, User
+from src.database.models import (
+    Channel,
+    Media,
+    Poll,
+    PollOption,
+    PollVote,
+    Post,
+    Reaction,
+    User,
+)
 from src.modules.channels.channels_methods import is_member
 from src.modules.storages.storage_methods import upload_file
 
@@ -93,8 +102,6 @@ def delete_post(db: Session, post_id: str) -> bool:
         return False
 
     # Delete related media records first
-    from src.database.models import Media, Reaction
-
     media_statement = select(Media).where(Media.post_id == post_id)
     media_records = db.exec(media_statement).all()
     for media in media_records:
@@ -105,6 +112,28 @@ def delete_post(db: Session, post_id: str) -> bool:
     reaction_records = db.exec(reaction_statement).all()
     for reaction in reaction_records:
         db.delete(reaction)
+
+    # Delete associated poll if this is a poll post
+    if post.type == "poll":
+        poll_statement = select(Poll).where(Poll.post_id == post_id)
+        poll = db.exec(poll_statement).first()
+        if poll:
+            # Delete all poll votes for this poll
+            votes_statement = select(PollVote).where(PollVote.poll_id == poll.id)
+            votes = db.exec(votes_statement).all()
+            for vote in votes:
+                db.delete(vote)
+
+            # Delete all poll options for this poll
+            options_statement = select(PollOption).where(
+                PollOption.poll_id == poll.id
+            )
+            options = db.exec(options_statement).all()
+            for option in options:
+                db.delete(option)
+
+            # Delete the poll itself
+            db.delete(poll)
 
     # Delete all replies (nested posts) recursively
     replies_statement = select(Post).where(Post.parent_id == post_id)
