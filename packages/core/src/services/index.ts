@@ -5,6 +5,7 @@ export { ArticlesRouter } from "./routers/articles";
 export { AuthRouter } from "./routers/auth";
 export { ChannelsRouter } from "./routers/channels";
 export { MediaRouter } from "./routers/media";
+export { PollsRouter } from "./routers/polls";
 export { PostsRouter } from "./routers/posts";
 export { ReactionsRouter } from "./routers/reactions";
 export { UsersRouter } from "./routers/users";

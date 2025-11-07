@@ -6,6 +6,7 @@ export const PostType = {
 	POST: "post",
 	COMMENT: "comment",
 	ARTICLE: "article",
+	POLL: "poll",
 } as const;
 
 export type PostType = (typeof PostType)[keyof typeof PostType];
