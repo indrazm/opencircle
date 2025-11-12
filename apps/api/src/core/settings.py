@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str = ""
     GITHUB_CLIENT_SECRET: str = ""
     GITHUB_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/github/callback"
+    # Email Settings
+    RESEND_API_KEY: str = ""
+    # Platform Settings
+    PLATFORM_URL: str = "http://localhost:3000"
 
     model_config = SettingsConfigDict(
         env_file="../../.env",  # <-- can be None safely

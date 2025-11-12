@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GithubCallbackRouteImport } from './routes/github-callback'
@@ -27,6 +29,16 @@ import { Route as SocialLayoutCoursesIdRouteImport } from './routes/_socialLayou
 import { Route as SocialLayoutArticlesIdRouteImport } from './routes/_socialLayout/articles/$id'
 import { Route as LearningLayoutLessonsIdRouteImport } from './routes/_learningLayout/lessons/$id'
 
+const ResetPasswordConfirmRoute = ResetPasswordConfirmRouteImport.update({
+  id: '/reset-password-confirm',
+  path: '/reset-password-confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -119,6 +131,8 @@ export interface FileRoutesByFullPath {
   '/github-callback': typeof GithubCallbackRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/$username': typeof SocialLayoutUsernameRoute
   '/about': typeof SocialLayoutAboutRoute
   '/edit-profile': typeof SocialLayoutEditProfileRoute
@@ -136,6 +150,8 @@ export interface FileRoutesByTo {
   '/github-callback': typeof GithubCallbackRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/$username': typeof SocialLayoutUsernameRoute
   '/about': typeof SocialLayoutAboutRoute
   '/edit-profile': typeof SocialLayoutEditProfileRoute
@@ -156,6 +172,8 @@ export interface FileRoutesById {
   '/github-callback': typeof GithubCallbackRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/_socialLayout/$username': typeof SocialLayoutUsernameRoute
   '/_socialLayout/about': typeof SocialLayoutAboutRoute
   '/_socialLayout/edit-profile': typeof SocialLayoutEditProfileRoute
@@ -175,6 +193,8 @@ export interface FileRouteTypes {
     | '/github-callback'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/reset-password-confirm'
     | '/$username'
     | '/about'
     | '/edit-profile'
@@ -192,6 +212,8 @@ export interface FileRouteTypes {
     | '/github-callback'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/reset-password-confirm'
     | '/$username'
     | '/about'
     | '/edit-profile'
@@ -211,6 +233,8 @@ export interface FileRouteTypes {
     | '/github-callback'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/reset-password-confirm'
     | '/_socialLayout/$username'
     | '/_socialLayout/about'
     | '/_socialLayout/edit-profile'
@@ -231,10 +255,26 @@ export interface RootRouteChildren {
   GithubCallbackRoute: typeof GithubCallbackRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password-confirm': {
+      id: '/reset-password-confirm'
+      path: '/reset-password-confirm'
+      fullPath: '/reset-password-confirm'
+      preLoaderRoute: typeof ResetPasswordConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -407,6 +447,8 @@ const rootRouteChildren: RootRouteChildren = {
   GithubCallbackRoute: GithubCallbackRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

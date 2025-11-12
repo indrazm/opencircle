@@ -33,3 +33,20 @@ class GitHubLoginResponse(BaseModel):
     email: str
     name: Optional[str] = None
     avatar_url: Optional[str] = None
+
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordResponse(BaseModel):
+    message: str
+
+
+class ConfirmResetPasswordRequest(BaseModel):
+    code: str
+    new_password: str
+
+
+class ConfirmResetPasswordResponse(BaseModel):
+    message: str

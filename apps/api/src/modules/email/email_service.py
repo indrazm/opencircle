@@ -1,0 +1,58 @@
+from typing import Optional
+
+import resend
+
+from src.core.settings import settings
+
+
+class EmailService:
+    def __init__(self, api_key: Optional[str] = None):
+        self.api_key = api_key or settings.RESEND_API_KEY
+        if self.api_key:
+            resend.api_key = self.api_key
+
+    def send_password_reset_email(
+        self, to_email: str, reset_code: str, reset_link: str
+    ) -> bool:
+        """Send password reset email using Resend."""
+        if not self.api_key:
+            print("Resend API key missing.")
+            return False
+
+        try:
+            subject = "Reset your OpenCircle password"
+            from_email = (
+                "hello@devscale.id"  # Default Resend domain, change to your domain
+            )
+            html_content = f"""
+            <h2>Reset your OpenCircle password</h2>
+            <p>Hi there,</p>
+            <p>You requested to reset your password for your OpenCircle account.</p>
+            <p>You can reset your password in two ways:</p>
+            <h3>Option 1: Click the link below</h3>
+            <p><a href="{reset_link}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px;">Reset Password</a></p>
+            <h3>Option 2: Use the verification code</h3>
+            <p>Your verification code is: <strong>{reset_code}</strong></p>
+            <p>This code will expire in 1 hour.</p>
+            <p>If you didn't request this password reset, please ignore this email.</p>
+            <p>Thanks,<br>The OpenCircle Team</p>
+            """
+
+            params = {
+                "from": from_email,
+                "to": [to_email],
+                "subject": subject,
+                "html": html_content,
+            }
+
+            result = resend.Emails.send(params)
+            print(f"Email sent successfully: {result}")
+            return True
+
+        except Exception as e:
+            print(f"Failed to send email: {str(e)}")
+            return False
+
+
+# Create a singleton instance
+email_service = EmailService()

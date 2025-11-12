@@ -7,12 +7,17 @@ from sqlmodel import Session
 
 from src.core.settings import settings
 from src.database.models import InviteCodeStatus, User, UserSettings
+from src.modules.auth.password_reset_methods import create_password_reset
+from src.modules.email.email_service import email_service
 from src.modules.invite_code.invite_code_methods import (
     auto_join_user_to_channel,
     get_invite_code_by_code,
     validate_and_use_invite_code,
 )
-from src.modules.user.user_methods import create_user, get_user_by_username
+from src.modules.user.user_methods import (
+    create_user,
+    get_user_by_username,
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -139,3 +144,23 @@ def login_user(db: Session, username: str, password: str) -> Optional[Token]:
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+def reset_password(db: Session, email: str) -> bool:
+    """Send password reset email to user."""
+    password_reset = create_password_reset(db, email)
+    if not password_reset:
+        # Don't reveal if email exists or not for security
+        return True
+
+    # Create reset link (you'll need to configure this URL)
+    reset_link = (
+        f"{settings.PLATFORM_URL}/reset-password-confirm?code={password_reset.code}"
+    )
+
+    # Send email
+    email_sent = email_service.send_password_reset_email(
+        to_email=email, reset_code=password_reset.code, reset_link=reset_link
+    )
+
+    return email_sent

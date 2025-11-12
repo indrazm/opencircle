@@ -41,6 +41,12 @@ class InviteCodeStatus(str, Enum):
     EXPIRED = "expired"
 
 
+class PasswordResetStatus(str, Enum):
+    ACTIVE = "active"
+    USED = "used"
+    EXPIRED = "expired"
+
+
 class PostType(str, Enum):
     POST = "post"
     COMMENT = "comment"
@@ -71,6 +77,17 @@ class InviteCode(BaseModel, table=True):
             "Channel", foreign_keys="InviteCode.auto_join_channel_id"
         )
     )
+
+
+class PasswordReset(BaseModel, table=True):
+    __tablename__ = "password_reset"
+
+    code: str = Field(index=True, unique=True)  # 6-letter code
+    email: str = Field(index=True)
+    status: PasswordResetStatus = Field(default=PasswordResetStatus.ACTIVE)
+    expires_at: str  # ISO datetime string
+    user_id: str = Field(foreign_key="user.id")
+    user: "User" = Relationship(sa_relationship=relationship("User"))
 
 
 class User(BaseModel, table=True):
@@ -124,6 +141,9 @@ class User(BaseModel, table=True):
     )
     user_social: "UserSocial" = Relationship(
         sa_relationship=relationship("UserSocial", back_populates="user", uselist=False)
+    )
+    password_resets: List["PasswordReset"] = Relationship(
+        sa_relationship=relationship("PasswordReset", back_populates="user")
     )
 
 

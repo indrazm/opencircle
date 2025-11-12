@@ -26,6 +26,8 @@ dependencies = [
  "alembic>=1.13.0",
  "python-dotenv>=1.1.1",
  "httpx-oauth>=0.15.0",
+ "resend>=2.19.0",
+ "loguru>=0.7.3",
 ]
 
 [dependency-groups]

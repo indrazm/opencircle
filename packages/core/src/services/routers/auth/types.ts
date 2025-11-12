@@ -107,3 +107,20 @@ export interface GitHubLoginResponse {
 	name?: string;
 	avatar_url?: string;
 }
+
+export interface ResetPasswordRequest {
+	email: string;
+}
+
+export interface ResetPasswordResponse {
+	message: string;
+}
+
+export interface ConfirmResetPasswordRequest {
+	code: string;
+	new_password: string;
+}
+
+export interface ConfirmResetPasswordResponse {
+	message: string;
+}

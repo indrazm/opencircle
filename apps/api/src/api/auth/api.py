@@ -1,22 +1,33 @@
 from fastapi import APIRouter, Depends, HTTPException
+from loguru import logger
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from src.core.settings import settings
 from src.database.engine import get_session as get_db
-from src.modules.auth.auth_methods import create_access_token, login_user, register_user
+from src.modules.auth.auth_methods import (
+    create_access_token,
+    login_user,
+    register_user,
+    reset_password,
+)
 from src.modules.auth.github_methods import (
     generate_state_token,
     get_github_authorization_url,
     handle_github_callback,
 )
+from src.modules.auth.password_reset_methods import reset_user_password
 
 from .serializer import (
+    ConfirmResetPasswordRequest,
+    ConfirmResetPasswordResponse,
     GitHubAuthUrlResponse,
     GitHubLoginRequest,
     GitHubLoginResponse,
     LoginRequest,
     RegisterRequest,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
 )
 
 router = APIRouter()
@@ -120,3 +131,35 @@ async def github_callback(
         raise HTTPException(
             status_code=400, detail=f"GitHub authentication failed: {str(e)}"
         )
+
+
+@router.post("/reset-password", response_model=ResetPasswordResponse)
+def reset_password_endpoint(
+    request: ResetPasswordRequest, db: Session = Depends(get_db)
+):
+    """Send password reset email to user."""
+    try:
+        reset_password(db, request.email)
+        return {
+            "message": "If your email is registered, you will receive a password reset link"
+        }
+    except Exception as e:
+        logger.error(f"Failed to send reset email: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to send reset email")
+
+
+@router.post("/confirm-reset-password", response_model=ConfirmResetPasswordResponse)
+def confirm_reset_password_endpoint(
+    request: ConfirmResetPasswordRequest, db: Session = Depends(get_db)
+):
+    """Reset user password using a reset code."""
+    try:
+        success = reset_user_password(db, request.code, request.new_password)
+        if not success:
+            raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+        return {"message": "Password reset successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to reset password: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to reset password")

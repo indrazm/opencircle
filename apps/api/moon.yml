@@ -10,6 +10,9 @@ tasks:
   lint:
     command: "uv run ruff check ."
 
+  lint-fix:
+    command: "uv run ruff check . --fix --unsafe-fixes"
+
   typecheck:
     command: "uv run ty check ."
     options:

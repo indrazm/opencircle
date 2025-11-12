@@ -101,6 +101,11 @@ function RouteComponent() {
 								</p>
 							)}
 						</section>
+						<section className="px-4 text-center">
+							<Link to="/reset-password" className="font-medium text-primary">
+								Forgot password?
+							</Link>
+						</section>
 						<Button radius="xl" className="mt-2 w-full" onClick={() => login()}>
 							Login
 						</Button>
