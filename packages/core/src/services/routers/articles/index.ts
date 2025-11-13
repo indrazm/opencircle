@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Article, ArticleCreate, ArticleUpdate } from "../../types";
 
 export class ArticlesRouter extends BaseRouter {

@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Media, MediaCreate, MediaUpdate } from "../../types";
 
 export class MediaRouter extends BaseRouter {

@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Reaction, ReactionCreate, ReactionsByEmoji } from "../../types";
 
 export type ReactionResponse = Reaction | { message: string };

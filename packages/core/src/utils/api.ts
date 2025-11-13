@@ -1,18 +1,18 @@
 import type { Hooks } from "ky";
-import { AccountRouter } from "./routers/account";
-import { AppSettingsRouter } from "./routers/appsettings";
-import { ArticlesRouter } from "./routers/articles";
-import { AuthRouter } from "./routers/auth";
-import { ChannelsRouter } from "./routers/channels";
-import { CoursesRouter } from "./routers/courses";
-import { ExtrasRouter } from "./routers/extras";
-import { InviteCodesRouter } from "./routers/invite-codes";
-import { MediaRouter } from "./routers/media";
-import { NotificationsRouter } from "./routers/notifications";
-import { PostsRouter } from "./routers/posts";
-import { ReactionsRouter } from "./routers/reactions";
-import { ResourcesRouter } from "./routers/resources";
-import { UsersRouter } from "./routers/users";
+import { AccountRouter } from "../services/routers/account";
+import { AppSettingsRouter } from "../services/routers/appsettings";
+import { ArticlesRouter } from "../services/routers/articles";
+import { AuthRouter } from "../services/routers/auth";
+import { ChannelsRouter } from "../services/routers/channels";
+import { CoursesRouter } from "../services/routers/courses";
+import { ExtrasRouter } from "../services/routers/extras";
+import { InviteCodesRouter } from "../services/routers/invite-codes";
+import { MediaRouter } from "../services/routers/media";
+import { NotificationsRouter } from "../services/routers/notifications";
+import { PostsRouter } from "../services/routers/posts";
+import { ReactionsRouter } from "../services/routers/reactions";
+import { ResourcesRouter } from "../services/routers/resources";
+import { UsersRouter } from "../services/routers/users";
 
 export class Api {
 	public users: UsersRouter;
@@ -111,4 +111,4 @@ export type {
 	UserCreate,
 	UserUpdate,
 	UserUpdateWithFile,
-} from "./types";
+} from "../services/types";

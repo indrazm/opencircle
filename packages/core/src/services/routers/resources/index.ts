@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Resource, ResourceCreate, ResourceUpdate } from "../../types";
 
 export class ResourcesRouter extends BaseRouter {

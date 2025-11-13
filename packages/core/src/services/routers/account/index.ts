@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { User } from "../../types";
 
 export class AccountRouter extends BaseRouter {

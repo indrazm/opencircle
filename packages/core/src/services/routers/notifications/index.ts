@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Notification } from "../../types";
 
 export class NotificationsRouter extends BaseRouter {

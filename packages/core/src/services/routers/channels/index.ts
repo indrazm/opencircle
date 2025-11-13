@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Channel, ChannelCreate, ChannelUpdate } from "../../types";
 
 export class ChannelsRouter extends BaseRouter {

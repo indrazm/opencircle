@@ -1,4 +1,4 @@
-import { BaseRouter } from "../../baseRouter";
+import { BaseRouter } from "../../../utils/baseRouter";
 import type { Post, PostCreate, PostUpdate } from "../../types";
 
 export class PostsRouter extends BaseRouter {
