@@ -64,9 +64,10 @@ export const dashboardService = {
 
 	async getDashboardStats(): Promise<DashboardStats> {
 		// Get all data to calculate stats
-		const [enrollments, courses] = await Promise.all([
+		const [enrollments, courses, users] = await Promise.all([
 			api.courses.getAllEnrollments(undefined, undefined, undefined, 0, 1000),
 			api.courses.getAllCourses(0, 1000, undefined, undefined),
+			api.users.getAll(0, 10000),
 		]);
 
 		const totalEnrollments = enrollments.length;
@@ -77,12 +78,10 @@ export const dashboardService = {
 			(e: any) => e.status === "completed",
 		).length;
 		const totalCourses = courses.length;
-
-		// Get unique users from enrollments
-		const uniqueUsers = new Set(enrollments.map((e: any) => e.user_id)).size;
+		const totalUsers = users.length;
 
 		return {
-			totalUsers: uniqueUsers,
+			totalUsers,
 			totalCourses,
 			activeEnrollments,
 			completedEnrollments,

@@ -34,8 +34,8 @@ export const DashboardStatsCards = ({
 			bgColor: "bg-background",
 		},
 		{
-			title: "Completed Enrollments",
-			value: stats.completedEnrollments,
+			title: "Total Enrollments",
+			value: stats.totalEnrollments,
 			icon: CheckCircle,
 			color: "text-foreground",
 			bgColor: "bg-background",
