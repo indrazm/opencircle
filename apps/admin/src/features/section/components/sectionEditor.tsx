@@ -216,7 +216,7 @@ export const SectionEditor = ({
 												size="sm"
 												onClick={() =>
 													router.navigate({
-														to: `/courses/lessons/edit/${lesson.id}`,
+														to: `/courses/lessons/${lesson.id}/edit`,
 													})
 												}
 											>

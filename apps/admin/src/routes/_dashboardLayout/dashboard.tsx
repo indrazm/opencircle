@@ -58,7 +58,7 @@ function RouteComponent() {
 	if (statsError || chartError || enrollmentsError) {
 		return (
 			<div className="p-6">
-				<div className="rounded-lg border border-red-200 bg-background-secondary p-4">
+				<div className="rounded-lg border border-border bg-background-secondary p-4">
 					<h3 className="font-medium text-foreground">
 						Error loading dashboard data
 					</h3>

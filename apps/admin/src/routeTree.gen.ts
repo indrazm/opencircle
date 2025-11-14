@@ -31,7 +31,8 @@ import { Route as DashboardLayoutArticlesIdRouteImport } from './routes/_dashboa
 import { Route as DashboardLayoutInviteCodesEditIdRouteImport } from './routes/_dashboardLayout/invite-codes/edit.$id'
 import { Route as DashboardLayoutCoursesEditIdRouteImport } from './routes/_dashboardLayout/courses/edit.$id'
 import { Route as DashboardLayoutArticlesEditIdRouteImport } from './routes/_dashboardLayout/articles.edit.$id'
-import { Route as DashboardLayoutCoursesLessonsEditLessonIdRouteImport } from './routes/_dashboardLayout/courses/lessons/edit.$lessonId'
+import { Route as DashboardLayoutCoursesSectionsSectionIdEditRouteImport } from './routes/_dashboardLayout/courses/sections/$sectionId/edit'
+import { Route as DashboardLayoutCoursesLessonsLessonIdEditRouteImport } from './routes/_dashboardLayout/courses/lessons/$lessonId/edit'
 
 const GithubCallbackRoute = GithubCallbackRouteImport.update({
   id: '/github-callback',
@@ -157,10 +158,16 @@ const DashboardLayoutArticlesEditIdRoute =
     path: '/articles/edit/$id',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
-const DashboardLayoutCoursesLessonsEditLessonIdRoute =
-  DashboardLayoutCoursesLessonsEditLessonIdRouteImport.update({
-    id: '/courses/lessons/edit/$lessonId',
-    path: '/courses/lessons/edit/$lessonId',
+const DashboardLayoutCoursesSectionsSectionIdEditRoute =
+  DashboardLayoutCoursesSectionsSectionIdEditRouteImport.update({
+    id: '/courses/sections/$sectionId/edit',
+    path: '/courses/sections/$sectionId/edit',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+const DashboardLayoutCoursesLessonsLessonIdEditRoute =
+  DashboardLayoutCoursesLessonsLessonIdEditRouteImport.update({
+    id: '/courses/lessons/$lessonId/edit',
+    path: '/courses/lessons/$lessonId/edit',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -186,7 +193,8 @@ export interface FileRoutesByFullPath {
   '/articles/edit/$id': typeof DashboardLayoutArticlesEditIdRoute
   '/courses/edit/$id': typeof DashboardLayoutCoursesEditIdRoute
   '/invite-codes/edit/$id': typeof DashboardLayoutInviteCodesEditIdRoute
-  '/courses/lessons/edit/$lessonId': typeof DashboardLayoutCoursesLessonsEditLessonIdRoute
+  '/courses/lessons/$lessonId/edit': typeof DashboardLayoutCoursesLessonsLessonIdEditRoute
+  '/courses/sections/$sectionId/edit': typeof DashboardLayoutCoursesSectionsSectionIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -210,7 +218,8 @@ export interface FileRoutesByTo {
   '/articles/edit/$id': typeof DashboardLayoutArticlesEditIdRoute
   '/courses/edit/$id': typeof DashboardLayoutCoursesEditIdRoute
   '/invite-codes/edit/$id': typeof DashboardLayoutInviteCodesEditIdRoute
-  '/courses/lessons/edit/$lessonId': typeof DashboardLayoutCoursesLessonsEditLessonIdRoute
+  '/courses/lessons/$lessonId/edit': typeof DashboardLayoutCoursesLessonsLessonIdEditRoute
+  '/courses/sections/$sectionId/edit': typeof DashboardLayoutCoursesSectionsSectionIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -236,7 +245,8 @@ export interface FileRoutesById {
   '/_dashboardLayout/articles/edit/$id': typeof DashboardLayoutArticlesEditIdRoute
   '/_dashboardLayout/courses/edit/$id': typeof DashboardLayoutCoursesEditIdRoute
   '/_dashboardLayout/invite-codes/edit/$id': typeof DashboardLayoutInviteCodesEditIdRoute
-  '/_dashboardLayout/courses/lessons/edit/$lessonId': typeof DashboardLayoutCoursesLessonsEditLessonIdRoute
+  '/_dashboardLayout/courses/lessons/$lessonId/edit': typeof DashboardLayoutCoursesLessonsLessonIdEditRoute
+  '/_dashboardLayout/courses/sections/$sectionId/edit': typeof DashboardLayoutCoursesSectionsSectionIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -262,7 +272,8 @@ export interface FileRouteTypes {
     | '/articles/edit/$id'
     | '/courses/edit/$id'
     | '/invite-codes/edit/$id'
-    | '/courses/lessons/edit/$lessonId'
+    | '/courses/lessons/$lessonId/edit'
+    | '/courses/sections/$sectionId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -286,7 +297,8 @@ export interface FileRouteTypes {
     | '/articles/edit/$id'
     | '/courses/edit/$id'
     | '/invite-codes/edit/$id'
-    | '/courses/lessons/edit/$lessonId'
+    | '/courses/lessons/$lessonId/edit'
+    | '/courses/sections/$sectionId/edit'
   id:
     | '__root__'
     | '/'
@@ -311,7 +323,8 @@ export interface FileRouteTypes {
     | '/_dashboardLayout/articles/edit/$id'
     | '/_dashboardLayout/courses/edit/$id'
     | '/_dashboardLayout/invite-codes/edit/$id'
-    | '/_dashboardLayout/courses/lessons/edit/$lessonId'
+    | '/_dashboardLayout/courses/lessons/$lessonId/edit'
+    | '/_dashboardLayout/courses/sections/$sectionId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -476,11 +489,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutArticlesEditIdRouteImport
       parentRoute: typeof DashboardLayoutRoute
     }
-    '/_dashboardLayout/courses/lessons/edit/$lessonId': {
-      id: '/_dashboardLayout/courses/lessons/edit/$lessonId'
-      path: '/courses/lessons/edit/$lessonId'
-      fullPath: '/courses/lessons/edit/$lessonId'
-      preLoaderRoute: typeof DashboardLayoutCoursesLessonsEditLessonIdRouteImport
+    '/_dashboardLayout/courses/sections/$sectionId/edit': {
+      id: '/_dashboardLayout/courses/sections/$sectionId/edit'
+      path: '/courses/sections/$sectionId/edit'
+      fullPath: '/courses/sections/$sectionId/edit'
+      preLoaderRoute: typeof DashboardLayoutCoursesSectionsSectionIdEditRouteImport
+      parentRoute: typeof DashboardLayoutRoute
+    }
+    '/_dashboardLayout/courses/lessons/$lessonId/edit': {
+      id: '/_dashboardLayout/courses/lessons/$lessonId/edit'
+      path: '/courses/lessons/$lessonId/edit'
+      fullPath: '/courses/lessons/$lessonId/edit'
+      preLoaderRoute: typeof DashboardLayoutCoursesLessonsLessonIdEditRouteImport
       parentRoute: typeof DashboardLayoutRoute
     }
   }
@@ -506,7 +526,8 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutArticlesEditIdRoute: typeof DashboardLayoutArticlesEditIdRoute
   DashboardLayoutCoursesEditIdRoute: typeof DashboardLayoutCoursesEditIdRoute
   DashboardLayoutInviteCodesEditIdRoute: typeof DashboardLayoutInviteCodesEditIdRoute
-  DashboardLayoutCoursesLessonsEditLessonIdRoute: typeof DashboardLayoutCoursesLessonsEditLessonIdRoute
+  DashboardLayoutCoursesLessonsLessonIdEditRoute: typeof DashboardLayoutCoursesLessonsLessonIdEditRoute
+  DashboardLayoutCoursesSectionsSectionIdEditRoute: typeof DashboardLayoutCoursesSectionsSectionIdEditRoute
 }
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
@@ -529,8 +550,10 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutArticlesEditIdRoute: DashboardLayoutArticlesEditIdRoute,
   DashboardLayoutCoursesEditIdRoute: DashboardLayoutCoursesEditIdRoute,
   DashboardLayoutInviteCodesEditIdRoute: DashboardLayoutInviteCodesEditIdRoute,
-  DashboardLayoutCoursesLessonsEditLessonIdRoute:
-    DashboardLayoutCoursesLessonsEditLessonIdRoute,
+  DashboardLayoutCoursesLessonsLessonIdEditRoute:
+    DashboardLayoutCoursesLessonsLessonIdEditRoute,
+  DashboardLayoutCoursesSectionsSectionIdEditRoute:
+    DashboardLayoutCoursesSectionsSectionIdEditRoute,
 }
 
 const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(

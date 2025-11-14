@@ -1,5 +1,6 @@
 import type { SectionCreate, SectionUpdate } from "@opencircle/core";
 import { Button } from "@opencircle/ui";
+import { useRouter } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { SectionEditor } from "../../../features/section/components/sectionEditor";
@@ -12,17 +13,15 @@ interface CourseContentManagerProps {
 export const CourseContentManager = ({
 	courseId,
 }: CourseContentManagerProps) => {
+	const router = useRouter();
 	const [showSectionForm, setShowSectionForm] = useState(false);
-	const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
 
 	const {
 		sections,
 		isSectionsLoading,
 		createSection,
-		updateSection,
 		deleteSection,
 		isCreatingSection,
-		isUpdatingSection,
 		isDeletingSection,
 	} = useSections(courseId);
 
@@ -37,16 +36,6 @@ export const CourseContentManager = ({
 			setShowSectionForm(false);
 		} catch (error) {
 			console.error("Failed to create section in CourseContentManager:", error);
-		}
-	};
-
-	const handleUpdateSection = async (sectionData: SectionUpdate) => {
-		if (!editingSectionId) return;
-		try {
-			await updateSection({ id: editingSectionId, data: sectionData });
-			setEditingSectionId(null);
-		} catch (error) {
-			console.error("Failed to update section in CourseContentManager:", error);
 		}
 	};
 
@@ -109,54 +98,47 @@ export const CourseContentManager = ({
 			) : (
 				<div className="space-y-4">
 					{sections.map((section) => (
-						<div key={section.id}>
-							{editingSectionId === section.id ? (
-								<SectionEditor
-									section={section}
-									courseId={courseId}
-									onSave={handleUpdateSection}
-									onCancel={() => setEditingSectionId(null)}
-									onDelete={() => handleDeleteSection(section.id)}
-									loading={isUpdatingSection}
-									isEdit={true}
-								/>
-							) : (
-								<div className="rounded-lg border border-border p-4">
-									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-3">
-											<div className="h-5 w-5 text-muted-foreground">⋮⋮</div>
-											<div>
-												<h3 className="font-medium">{section.title}</h3>
-												{section.description && (
-													<p className="line-clamp-1 text-muted-foreground text-sm">
-														{section.description}
-													</p>
-												)}
-											</div>
-										</div>
-										<div className="flex items-center gap-2">
-											<span className="text-muted-foreground text-sm">
-												{section.lessons?.length || 0} lessons
-											</span>
-											<Button
-												type="button"
-												size="sm"
-												onClick={() => setEditingSectionId(section.id)}
-											>
-												Edit
-											</Button>
-											<Button
-												type="button"
-												size="sm"
-												onClick={() => handleDeleteSection(section.id)}
-												disabled={isDeletingSection}
-											>
-												Delete
-											</Button>
-										</div>
+						<div
+							key={section.id}
+							className="rounded-lg border border-border p-4"
+						>
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-3">
+									<div className="h-5 w-5 text-muted-foreground">⋮⋮</div>
+									<div>
+										<h3 className="font-medium">{section.title}</h3>
+										{section.description && (
+											<p className="line-clamp-1 text-muted-foreground text-sm">
+												{section.description}
+											</p>
+										)}
 									</div>
 								</div>
-							)}
+								<div className="flex items-center gap-2">
+									<span className="text-muted-foreground text-sm">
+										{section.lessons?.length || 0} lessons
+									</span>
+									<Button
+										type="button"
+										size="sm"
+										onClick={() =>
+											router.navigate({
+												to: `/courses/sections/${section.id}/edit`,
+											})
+										}
+									>
+										Edit
+									</Button>
+									<Button
+										type="button"
+										size="sm"
+										onClick={() => handleDeleteSection(section.id)}
+										disabled={isDeletingSection}
+									>
+										Delete
+									</Button>
+								</div>
+							</div>
 						</div>
 					))}
 				</div>
