@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardStatsCards } from "../../components/dashboard/DashboardStats";
-import { EnrollmentChartComponent } from "../../components/dashboard/EnrollmentChart";
-import { RecentEnrollmentsTable } from "../../components/dashboard/RecentEnrollments";
+import { DashboardStatsCards } from "../../components/dashboard/dashboardStatistic";
+import { EnrollmentChartComponent } from "../../components/dashboard/enrollmentCharts";
+import { RecentEnrollmentsTable } from "../../components/dashboard/recentCourseEnrollments";
 import { METADATA } from "../../constants/metadata";
 import { dashboardService } from "../../services/dashboard";
 
@@ -43,7 +43,7 @@ function RouteComponent() {
 		error: chartError,
 	} = useQuery({
 		queryKey: ["dashboard-chart"],
-		queryFn: () => dashboardService.getEnrollmentChartData(30),
+		queryFn: () => dashboardService.getEnrollmentChartData(7),
 	});
 
 	const {
@@ -92,49 +92,10 @@ function RouteComponent() {
 				isLoading={statsLoading}
 			/>
 
-			<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-				<EnrollmentChartComponent
-					data={chartData || []}
-					isLoading={chartLoading}
-				/>
-				<div className="rounded-lg bg-background p-6 shadow">
-					<h3 className="mb-4 font-semibold text-foreground text-lg">
-						Quick Stats
-					</h3>
-					<div className="space-y-4">
-						<div className="flex items-center justify-between rounded bg-background-secondary p-3">
-							<span className="text-foreground text-sm">Total Enrollments</span>
-							<span className="font-semibold text-foreground">
-								{stats?.totalEnrollments?.toLocaleString() || 0}
-							</span>
-						</div>
-						<div className="flex items-center justify-between rounded bg-background-secondary p-3">
-							<span className="text-foreground text-sm">Completion Rate</span>
-							<span className="font-semibold text-foreground">
-								{stats?.totalEnrollments
-									? Math.round(
-											(stats.completedEnrollments / stats.totalEnrollments) *
-												100,
-										)
-									: 0}
-								%
-							</span>
-						</div>
-						<div className="flex items-center justify-between rounded bg-background-secondary p-3">
-							<span className="text-foreground text-sm">Active Users</span>
-							<span className="font-semibold text-foreground">
-								{stats?.totalUsers?.toLocaleString() || 0}
-							</span>
-						</div>
-						<div className="flex items-center justify-between rounded bg-background-secondary p-3">
-							<span className="text-foreground text-sm">Published Courses</span>
-							<span className="font-semibold text-foreground">
-								{stats?.totalCourses?.toLocaleString() || 0}
-							</span>
-						</div>
-					</div>
-				</div>
-			</div>
+			<EnrollmentChartComponent
+				data={chartData || []}
+				isLoading={chartLoading}
+			/>
 
 			<RecentEnrollmentsTable
 				enrollments={enrollments || []}

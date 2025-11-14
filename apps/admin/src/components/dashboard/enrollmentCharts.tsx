@@ -1,8 +1,7 @@
 import {
-	CartesianGrid,
+	Bar,
+	BarChart,
 	Legend,
-	Line,
-	LineChart,
 	ResponsiveContainer,
 	Tooltip,
 	XAxis,
@@ -41,46 +40,43 @@ export const EnrollmentChartComponent = ({
 				Enrollment Trends
 			</h3>
 			<ResponsiveContainer width="100%" height={320}>
-				<LineChart
-					data={data}
-					margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-				>
-					<CartesianGrid strokeDasharray="3 3" />
+				<BarChart data={data} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
 					<XAxis
 						dataKey="date"
 						tickFormatter={formatDate}
 						tick={{ fontSize: 12 }}
 					/>
-					<YAxis tick={{ fontSize: 12 }} />
+					<YAxis hide />
 					<Tooltip
 						labelFormatter={(value) => formatDate(value as string)}
 						formatter={(value, name) => [
 							value,
 							name === "enrollments" ? "New Enrollments" : "Completions",
 						]}
+						contentStyle={{
+							backgroundColor: "rgba(255, 255, 255, 0.95)",
+							border: "1px solid #e5e7eb",
+							borderRadius: "6px",
+						}}
 					/>
 					<Legend
 						formatter={(value) =>
 							value === "enrollments" ? "New Enrollments" : "Completions"
 						}
 					/>
-					<Line
-						type="monotone"
+					<Bar
 						dataKey="enrollments"
-						stroke="#3b82f6"
-						strokeWidth={2}
-						dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
-						activeDot={{ r: 6 }}
+						fill="#6366f1"
+						fillOpacity={0.8}
+						radius={[4, 4, 0, 0]}
 					/>
-					<Line
-						type="monotone"
+					<Bar
 						dataKey="completions"
-						stroke="#10b981"
-						strokeWidth={2}
-						dot={{ fill: "#10b981", strokeWidth: 2, r: 4 }}
-						activeDot={{ r: 6 }}
+						fill="#818cf8"
+						fillOpacity={0.6}
+						radius={[4, 4, 0, 0]}
 					/>
-				</LineChart>
+				</BarChart>
 			</ResponsiveContainer>
 		</div>
 	);

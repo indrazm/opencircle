@@ -25,14 +25,16 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "off",
+				"noArrayIndexKey": "off"
 			},
 			"nursery": {
 				"useSortedClasses": "error"
 			},
 			"a11y": {
 				"useKeyWithClickEvents": "off",
-				"noStaticElementInteractions": "off"
+				"noStaticElementInteractions": "off",
+				"noLabelWithoutControl": "off"
 			}
 		}
 	},

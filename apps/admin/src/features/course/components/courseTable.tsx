@@ -7,17 +7,27 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
+	Input,
 } from "@opencircle/ui";
 import { useRouter } from "@tanstack/react-router";
 import {
 	type ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	getFilteredRowModel,
 	getSortedRowModel,
+	type SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
-import { Edit, Trash } from "lucide-react";
-import { useState } from "react";
+import {
+	ArrowDown,
+	ArrowUp,
+	ArrowUpDown,
+	Edit,
+	Search,
+	Trash,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import { useCourseDelete } from "../hooks/useCourseDelete";
 
 interface CourseTableProps {
@@ -27,6 +37,8 @@ interface CourseTableProps {
 
 export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 	const [rowSelection, setRowSelection] = useState({});
+	const [sorting, setSorting] = useState<SortingState>([]);
+	const [searchQuery, setSearchQuery] = useState("");
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
 	const router = useRouter();
@@ -84,7 +96,24 @@ export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 		},
 		{
 			accessorKey: "title",
-			header: "Title",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Title
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="font-medium">{row.getValue("title")}</div>
 			),
@@ -103,7 +132,24 @@ export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 		},
 		{
 			accessorKey: "status",
-			header: "Status",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Status
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="text-sm capitalize">
 					<span
@@ -122,7 +168,24 @@ export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 		},
 		{
 			accessorKey: "price",
-			header: "Price",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Price
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => {
 				const price = row.getValue("price") as number;
 				return (
@@ -156,7 +219,24 @@ export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 		},
 		{
 			accessorKey: "created_at",
-			header: "Created",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Created
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => {
 				const date = new Date(row.getValue("created_at"));
 				return <div className="text-sm">{date.toLocaleDateString()}</div>;
@@ -190,70 +270,138 @@ export const CourseTable = ({ courses, isLoading }: CourseTableProps) => {
 		},
 	];
 
+	// Filter courses based on search query
+	const filteredCourses = useMemo(() => {
+		if (!searchQuery.trim()) return courses;
+
+		const query = searchQuery.toLowerCase();
+		return courses.filter((course) => {
+			return (
+				course.title?.toLowerCase().includes(query) ||
+				course.instructor?.name?.toLowerCase().includes(query) ||
+				course.instructor?.username?.toLowerCase().includes(query) ||
+				course.status?.toLowerCase().includes(query)
+			);
+		});
+	}, [courses, searchQuery]);
+
 	const table = useReactTable({
-		data: courses,
+		data: filteredCourses,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
 		onRowSelectionChange: setRowSelection,
+		onSortingChange: setSorting,
 		state: {
 			rowSelection,
+			sorting,
 		},
 	});
 
 	if (isLoading) {
-		return <div className="p-4">Loading courses...</div>;
+		return (
+			<div className="rounded-lg border border-border bg-background shadow-sm">
+				<div className="p-6">
+					<div className="space-y-3">
+						{[...Array(5)].map((_, i) => (
+							<div
+								key={`skeleton-course-row-${i}`}
+								className="animate-pulse border-border border-b pb-4 last:border-0"
+							>
+								<div className="flex items-center gap-4">
+									<div className="flex-1 space-y-2">
+										<div className="h-4 w-48 rounded bg-background-secondary"></div>
+										<div className="h-3 w-32 rounded bg-background-secondary"></div>
+									</div>
+									<div className="h-6 w-20 rounded-full bg-background-secondary"></div>
+									<div className="h-4 w-24 rounded bg-background-secondary"></div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	return (
 		<>
-			<div className="rounded-md border border-border">
-				<table className="w-full">
-					<thead className="bg-muted/50">
-						{table.getHeaderGroups().map((headerGroup) => (
-							<tr key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<th
-										key={header.id}
-										className="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
-									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext(),
-												)}
-									</th>
+			<div className="space-y-4">
+				{/* Search Input */}
+				<div className="relative">
+					<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+						<Search size={16} className="text-foreground/40" />
+					</div>
+					<Input
+						type="text"
+						placeholder="Search by title, instructor, or status..."
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						className="pl-10"
+					/>
+				</div>
+
+				{/* Results count */}
+				{searchQuery && (
+					<div className="text-foreground/60 text-sm">
+						Showing {filteredCourses.length} of {courses.length} courses
+					</div>
+				)}
+
+				<div className="rounded-lg border border-border bg-background shadow-sm">
+					<div className="overflow-x-auto">
+						<table className="min-w-full divide-y divide-border">
+							<thead className="bg-background-secondary/50">
+								{table.getHeaderGroups().map((headerGroup) => (
+									<tr key={headerGroup.id}>
+										{headerGroup.headers.map((header) => (
+											<th
+												key={header.id}
+												className="px-6 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider"
+											>
+												{header.isPlaceholder
+													? null
+													: flexRender(
+															header.column.columnDef.header,
+															header.getContext(),
+														)}
+											</th>
+										))}
+									</tr>
 								))}
-							</tr>
-						))}
-					</thead>
-					<tbody>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<tr
-									key={row.id}
-									className="border-border border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-								>
-									{row.getVisibleCells().map((cell) => (
-										<td key={cell.id} className="p-4 align-middle">
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext(),
-											)}
+							</thead>
+							<tbody className="divide-y divide-border bg-background">
+								{table.getRowModel().rows?.length ? (
+									table.getRowModel().rows.map((row) => (
+										<tr
+											key={row.id}
+											className="transition-colors hover:bg-background-secondary/50"
+										>
+											{row.getVisibleCells().map((cell) => (
+												<td key={cell.id} className="px-6 py-4">
+													{flexRender(
+														cell.column.columnDef.cell,
+														cell.getContext(),
+													)}
+												</td>
+											))}
+										</tr>
+									))
+								) : (
+									<tr>
+										<td
+											colSpan={columns.length}
+											className="px-6 py-12 text-center text-foreground/60 text-sm"
+										>
+											No courses found.
 										</td>
-									))}
-								</tr>
-							))
-						) : (
-							<tr>
-								<td colSpan={columns.length} className="h-24 text-center">
-									No courses found.
-								</td>
-							</tr>
-						)}
-					</tbody>
-				</table>
+									</tr>
+								)}
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
 				<DialogContent>

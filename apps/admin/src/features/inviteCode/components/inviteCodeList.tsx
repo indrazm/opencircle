@@ -1,14 +1,26 @@
 import type { InviteCode } from "@opencircle/core";
-import { Button } from "@opencircle/ui";
+import { Button, Input } from "@opencircle/ui";
 import { useRouter } from "@tanstack/react-router";
 import {
 	type ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	getFilteredRowModel,
+	getSortedRowModel,
+	type SortingState,
 	useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Ban, Edit, Trash2 } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	ArrowUpDown,
+	Ban,
+	Edit,
+	Search,
+	Trash2,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 
 interface InviteCodeListProps {
 	inviteCodes: InviteCode[];
@@ -24,10 +36,29 @@ export const InviteCodeList = ({
 	loading,
 }: InviteCodeListProps) => {
 	const router = useRouter();
+	const [sorting, setSorting] = useState<SortingState>([]);
+	const [searchQuery, setSearchQuery] = useState("");
 	const columns: ColumnDef<InviteCode>[] = [
 		{
 			accessorKey: "code",
-			header: "Code",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Code
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => (
 				<div className="max-w-xs truncate font-medium font-mono text-sm">
 					{row.getValue("code")}
@@ -63,7 +94,24 @@ export const InviteCodeList = ({
 		},
 		{
 			accessorKey: "status",
-			header: "Status",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Status
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => {
 				const status = row.getValue("status") as string;
 				const statusColors = {
@@ -82,7 +130,24 @@ export const InviteCodeList = ({
 		},
 		{
 			accessorKey: "expires_at",
-			header: "Expires",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Expires
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => {
 				const expiresAt = row.getValue("expires_at") as string;
 				if (!expiresAt) return <div className="text-sm">Never</div>;
@@ -110,7 +175,24 @@ export const InviteCodeList = ({
 		},
 		{
 			accessorKey: "created_at",
-			header: "Created",
+			header: ({ column }) => {
+				return (
+					<button
+						type="button"
+						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+						className="flex items-center gap-2 transition-colors hover:text-foreground"
+					>
+						Created
+						{column.getIsSorted() === "asc" ? (
+							<ArrowUp size={14} />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowDown size={14} />
+						) : (
+							<ArrowUpDown size={14} className="opacity-50" />
+						)}
+					</button>
+				);
+			},
 			cell: ({ row }) => {
 				const dateValue = row.getValue("created_at") as string;
 				if (!dateValue) return <div className="text-sm">N/A</div>;
@@ -166,61 +248,135 @@ export const InviteCodeList = ({
 		},
 	];
 
+	// Filter invite codes based on search query
+	const filteredInviteCodes = useMemo(() => {
+		if (!searchQuery.trim()) return inviteCodes;
+
+		const query = searchQuery.toLowerCase();
+		return inviteCodes.filter((inviteCode) => {
+			return (
+				inviteCode.code?.toLowerCase().includes(query) ||
+				inviteCode.status?.toLowerCase().includes(query) ||
+				inviteCode.auto_join_channel_id?.toLowerCase().includes(query)
+			);
+		});
+	}, [inviteCodes, searchQuery]);
+
 	const table = useReactTable({
-		data: inviteCodes,
+		data: filteredInviteCodes,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onSortingChange: setSorting,
+		state: {
+			sorting,
+		},
 	});
 
 	if (loading) {
-		return <div className="p-4">Loading invite codes...</div>;
+		return (
+			<div className="rounded-lg border border-border bg-background shadow-sm">
+				<div className="p-6">
+					<div className="space-y-3">
+						{[...Array(5)].map((_, i) => (
+							<div
+								key={`skeleton-invite-code-row-${i}`}
+								className="animate-pulse border-border border-b pb-4 last:border-0"
+							>
+								<div className="flex items-center gap-4">
+									<div className="flex-1 space-y-2">
+										<div className="h-4 w-48 rounded bg-background-secondary"></div>
+										<div className="h-3 w-32 rounded bg-background-secondary"></div>
+									</div>
+									<div className="h-6 w-20 rounded-full bg-background-secondary"></div>
+									<div className="h-4 w-24 rounded bg-background-secondary"></div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	return (
-		<div className="rounded-md border border-border">
-			<table className="w-full">
-				<thead className="bg-muted/50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th
-									key={header.id}
-									className="h-12 px-4 text-left align-middle font-medium text-muted-foreground"
-								>
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)}
-								</th>
+		<div className="space-y-4">
+			{/* Search Input */}
+			<div className="relative">
+				<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+					<Search size={16} className="text-foreground/40" />
+				</div>
+				<Input
+					type="text"
+					placeholder="Search by code, status, or channel..."
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
+					className="pl-10"
+				/>
+			</div>
+
+			{/* Results count */}
+			{searchQuery && (
+				<div className="text-foreground/60 text-sm">
+					Showing {filteredInviteCodes.length} of {inviteCodes.length} invite
+					codes
+				</div>
+			)}
+
+			<div className="rounded-lg border border-border bg-background shadow-sm">
+				<div className="overflow-x-auto">
+					<table className="min-w-full divide-y divide-border">
+						<thead className="bg-background-secondary/50">
+							{table.getHeaderGroups().map((headerGroup) => (
+								<tr key={headerGroup.id}>
+									{headerGroup.headers.map((header) => (
+										<th
+											key={header.id}
+											className="px-6 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider"
+										>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+										</th>
+									))}
+								</tr>
 							))}
-						</tr>
-					))}
-				</thead>
-				<tbody>
-					{table.getRowModel().rows?.length ? (
-						table.getRowModel().rows.map((row) => (
-							<tr
-								key={row.id}
-								className="border-border border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-							>
-								{row.getVisibleCells().map((cell) => (
-									<td key={cell.id} className="p-4 align-middle">
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+						</thead>
+						<tbody className="divide-y divide-border bg-background">
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<tr
+										key={row.id}
+										className="transition-colors hover:bg-background-secondary/50"
+									>
+										{row.getVisibleCells().map((cell) => (
+											<td key={cell.id} className="px-6 py-4">
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext(),
+												)}
+											</td>
+										))}
+									</tr>
+								))
+							) : (
+								<tr>
+									<td
+										colSpan={columns.length}
+										className="px-6 py-12 text-center text-foreground/60 text-sm"
+									>
+										No invite codes found.
 									</td>
-								))}
-							</tr>
-						))
-					) : (
-						<tr>
-							<td colSpan={columns.length} className="h-24 text-center">
-								No invite codes found.
-							</td>
-						</tr>
-					)}
-				</tbody>
-			</table>
+								</tr>
+							)}
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 	);
 };

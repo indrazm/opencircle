@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { METADATA } from "../../constants/metadata";
-import { UserTable } from "../../features/user/components/userTable";
-import { useUsers } from "../../features/user/hooks/useUsers";
+import { METADATA } from "../../../constants/metadata";
+import { UserTable } from "../../../features/user/components/userTable";
+import { useUsers } from "../../../features/user/hooks/useUsers";
 
-export const Route = createFileRoute("/_dashboardLayout/users")({
+export const Route = createFileRoute("/_dashboardLayout/users/")({
 	head: () => ({
 		meta: [
 			{
