@@ -23,7 +23,6 @@ def get_notifications_endpoint(
     db: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ):
-    print(current_user)
     """Get all notifications for the current user."""
     return get_notifications_by_user(db, current_user.id, skip, limit)
 

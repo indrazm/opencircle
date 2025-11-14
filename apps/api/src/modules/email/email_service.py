@@ -1,6 +1,7 @@
 from typing import Optional
 
 import resend
+from loguru import logger
 
 from src.core.settings import settings
 
@@ -16,7 +17,7 @@ class EmailService:
     ) -> bool:
         """Send password reset email using Resend."""
         if not self.api_key:
-            print("Resend API key missing.")
+            logger.error("Resend API key missing.")
             return False
 
         try:
@@ -46,11 +47,11 @@ class EmailService:
             }
 
             result = resend.Emails.send(params)
-            print(f"Email sent successfully: {result}")
+            logger.info(f"Email sent successfully: {result}")
             return True
 
         except Exception as e:
-            print(f"Failed to send email: {str(e)}")
+            logger.error(f"Failed to send email: {str(e)}")
             return False
 
 

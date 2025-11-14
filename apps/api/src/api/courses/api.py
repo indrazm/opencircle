@@ -71,16 +71,6 @@ def get_course_endpoint(course_id: str, db: Session = Depends(get_db)):
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
 
-    # Debug: Print what we're getting
-    print(f"Course: {course.title}")
-    print(f"Sections count: {len(course.sections) if course.sections else 0}")
-    for i, section in enumerate(course.sections):
-        print(f"Section {i}: {section.title}")
-        print(f"  Lessons count: {len(section.lessons) if section.lessons else 0}")
-        if section.lessons:
-            for j, lesson in enumerate(section.lessons):
-                print(f"    Lesson {j}: {lesson.title}")
-
     return course
 
 

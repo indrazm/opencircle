@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from loguru import logger
 from sqlmodel import Session
 
 from src.api.account.api import get_current_user
@@ -106,10 +107,21 @@ def create_post_endpoint(
 
     created_post = create_post(db, post_data)
 
+    # Calculate original_post_id for notification
+    original_post_id = None
+    if post_data.get("parent_id"):
+        # Walk up the parent chain to find the original post
+        current_parent = get_post(db, post_data["parent_id"])
+        while current_parent and current_parent.parent_id:
+            current_parent = get_post(db, current_parent.parent_id)
+        original_post_id = (
+            current_parent.id if current_parent else post_data["parent_id"]
+        )
+
     # Extract mentions and create notifications
     if post_data.get("content"):
         mentions = extract_mention(post_data["content"])
-        print(mentions)
+        logger.info(mentions)
         if mentions:
             for username in mentions:
                 mentioned_user = get_user_by_username(db, username)
@@ -121,6 +133,7 @@ def create_post_endpoint(
                         data={
                             "post_id": created_post.id,
                             "content": post_data["content"],
+                            "original_post_id": original_post_id,
                         },
                     )
 
@@ -157,6 +170,17 @@ def create_post_with_files_endpoint(
 
     created_post = create_post(db, post_data, files)
 
+    # Calculate original_post_id for notification
+    original_post_id = None
+    if post_data.get("parent_id"):
+        # Walk up the parent chain to find the original post
+        current_parent = get_post(db, post_data["parent_id"])
+        while current_parent and current_parent.parent_id:
+            current_parent = get_post(db, current_parent.parent_id)
+        original_post_id = (
+            current_parent.id if current_parent else post_data["parent_id"]
+        )
+
     # Extract mentions and create notifications
     if post_data.get("content"):
         mentions = extract_mention(post_data["content"])
@@ -171,6 +195,7 @@ def create_post_with_files_endpoint(
                         data={
                             "post_id": created_post.id,
                             "content": post_data["content"],
+                            "original_post_id": original_post_id,
                         },
                     )
 

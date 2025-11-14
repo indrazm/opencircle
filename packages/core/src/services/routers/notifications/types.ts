@@ -16,6 +16,7 @@ export interface Notification {
 	data?: {
 		content: string;
 		post_id?: string;
+		original_post_id?: string;
 	};
 	is_read: boolean;
 	recipient: User;
