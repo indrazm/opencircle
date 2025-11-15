@@ -25,9 +25,17 @@ export const UserTabs = ({
 	const [activeTab, setActiveTab] = useState("posts");
 	const userPosts = posts.filter((post) => post.type === "post");
 	const userReplies = posts.filter((post) => post.type === "comment");
-	const observerTarget = useRef<HTMLDivElement>(null);
+	const postsObserverTarget = useRef<HTMLDivElement>(null);
+	const repliesObserverTarget = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
+		const currentTarget =
+			activeTab === "posts"
+				? postsObserverTarget.current
+				: repliesObserverTarget.current;
+
+		if (!currentTarget) return;
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -37,17 +45,12 @@ export const UserTabs = ({
 			{ threshold: 1.0 },
 		);
 
-		const currentTarget = observerTarget.current;
-		if (currentTarget) {
-			observer.observe(currentTarget);
-		}
+		observer.observe(currentTarget);
 
 		return () => {
-			if (currentTarget) {
-				observer.unobserve(currentTarget);
-			}
+			observer.unobserve(currentTarget);
 		};
-	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+	}, [activeTab, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
 	return (
 		<main>
@@ -75,7 +78,7 @@ export const UserTabs = ({
 						<PostCard key={post.id} post={post} />
 					))}
 					{hasNextPage && (
-						<div ref={observerTarget} className="p-4 text-center">
+						<div ref={postsObserverTarget} className="p-4 text-center">
 							{isFetchingNextPage ? (
 								<div className="text-muted-foreground text-sm">
 									Loading more...
@@ -93,7 +96,7 @@ export const UserTabs = ({
 						<PostCard key={post.id} post={post} />
 					))}
 					{hasNextPage && (
-						<div ref={observerTarget} className="p-4 text-center">
+						<div ref={repliesObserverTarget} className="p-4 text-center">
 							{isFetchingNextPage ? (
 								<div className="text-muted-foreground text-sm">
 									Loading more...
