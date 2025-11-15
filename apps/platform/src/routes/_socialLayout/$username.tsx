@@ -44,7 +44,9 @@ export const Route = createFileRoute("/_socialLayout/$username")({
 function UserDetail() {
 	const { username } = Route.useParams();
 	const { user, isUserLoading } = useUser(username);
-	const { posts } = usePosts({ userId: user?.id });
+	const { posts, fetchNextPage, hasNextPage, isFetchingNextPage } = usePosts({
+		userId: user?.id,
+	});
 	const gradientId = useId();
 
 	if (isUserLoading) {
@@ -254,7 +256,12 @@ function UserDetail() {
 					)}
 				</div>
 			</section>
-			<UserTabs posts={posts} />
+			<UserTabs
+				posts={posts}
+				fetchNextPage={fetchNextPage}
+				hasNextPage={hasNextPage}
+				isFetchingNextPage={isFetchingNextPage}
+			/>
 		</main>
 	);
 }

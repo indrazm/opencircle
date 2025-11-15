@@ -1,5 +1,4 @@
-import type { Post } from "@opencircle/core";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
 import { HTTPError } from "ky";
 import { api } from "../../../utils/api";
@@ -9,25 +8,31 @@ interface SearchParams {
 }
 
 interface usePostsProps {
-	skip?: number;
 	limit?: number;
 	userId?: string;
 	parentId?: string;
-	postType?: "posts" | "comment" | "article";
+	postType?: "post" | "comment" | "article";
 	channelSlug?: string;
 }
 
 export const usePosts = (props?: usePostsProps) => {
 	const search = useSearch({ strict: false }) as SearchParams;
 	const channelSlug = props?.channelSlug || search?.channel;
+	const limit = props?.limit || 20;
 
-	const { data, isLoading, error } = useQuery<Post[]>({
-		initialData: [],
+	const {
+		data,
+		isLoading,
+		error,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteQuery({
 		queryKey: ["posts", props, channelSlug],
-		queryFn: async () => {
+		queryFn: async ({ pageParam }) => {
 			const response = await api.posts.getAll(
-				props?.limit,
-				props?.skip,
+				pageParam,
+				limit,
 				props?.userId,
 				props?.postType,
 				props?.parentId,
@@ -35,6 +40,13 @@ export const usePosts = (props?: usePostsProps) => {
 			);
 			return response;
 		},
+		getNextPageParam: (lastPage, allPages) => {
+			if (lastPage.length < limit) {
+				return undefined;
+			}
+			return allPages.length * limit;
+		},
+		initialPageParam: 0,
 		retry: (failureCount, error) => {
 			if (error instanceof HTTPError && error.response.status === 403) {
 				console.error("Not Eligible to access");
@@ -44,9 +56,16 @@ export const usePosts = (props?: usePostsProps) => {
 		},
 	});
 
+	// Flatten all pages into a single array of posts
+	// useInfiniteQuery returns data.pages as an array of arrays (one array per page)
+	const posts = data?.pages.flat() || [];
+
 	return {
-		posts: data,
+		posts,
 		isPostLoading: isLoading,
 		error,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
 	};
 };

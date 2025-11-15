@@ -1,16 +1,46 @@
 import { Button, Input } from "@opencircle/ui";
 import { LockIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAccount } from "../../../features/auth/hooks/useAccount";
 import { api } from "../../../utils/api";
 import { PostCard } from "../../posts/components/postCard";
 import { usePosts } from "../../posts/hooks/usePosts";
 
 export const PostsList = () => {
-	const { posts, isPostLoading, error } = usePosts();
+	const {
+		posts,
+		isPostLoading,
+		error,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = usePosts();
 	const [inviteCode, setInviteCode] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { account } = useAccount();
+	const observerTarget = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+					fetchNextPage();
+				}
+			},
+			{ threshold: 1.0 },
+		);
+
+		const currentTarget = observerTarget.current;
+		if (currentTarget) {
+			observer.observe(currentTarget);
+		}
+
+		return () => {
+			if (currentTarget) {
+				observer.unobserve(currentTarget);
+			}
+		};
+	}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
 	const handleRequestAccess = async () => {
 		if (!inviteCode.trim()) return;
@@ -80,6 +110,15 @@ export const PostsList = () => {
 			{posts.map((post) => (
 				<PostCard key={post.id} post={post} />
 			))}
+			{hasNextPage && (
+				<div ref={observerTarget} className="p-4 text-center">
+					{isFetchingNextPage ? (
+						<div className="text-muted-foreground text-sm">Loading more...</div>
+					) : (
+						<div className="h-4" />
+					)}
+				</div>
+			)}
 		</>
 	);
 };
