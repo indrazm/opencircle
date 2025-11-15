@@ -83,6 +83,15 @@ async def get_github_user_info(access_token: str) -> GitHubUserInfo:
 
 def create_user_from_github(db: Session, github_user: GitHubUserInfo) -> User:
     """Create a new user from GitHub OAuth data."""
+    # Check if registration is enabled
+    from src.modules.appsettings import appsettings_methods
+
+    app_settings = appsettings_methods.get_active_app_settings(db)
+    if app_settings and not app_settings.enable_sign_up:
+        raise ValueError(
+            "Registration is currently disabled. Please contact the administrator."
+        )
+
     # Generate a unique username based on GitHub login
     base_username = github_user["login"].lower()
     username = base_username
