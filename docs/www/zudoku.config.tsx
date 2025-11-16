@@ -20,6 +20,7 @@ const config: ZudokuConfig = {
           items: [
             "/introduction",
             "/self-hosting",
+            "/platform-setup",
           ],
         },
         {
