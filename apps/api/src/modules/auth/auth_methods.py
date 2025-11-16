@@ -3,6 +3,7 @@ from typing import Optional, TypedDict
 
 import jwt
 from passlib.context import CryptContext
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from src.core.settings import settings
@@ -97,10 +98,14 @@ def register_user(
 
     user = create_user(db, user_data)
 
-    # Create user settings for the new user
-    user_settings = UserSettings(user_id=user.id, is_onboarded=False)
-    db.add(user_settings)
-    db.commit()
+    # Create user settings for the new user (with protection against race conditions)
+    try:
+        user_settings = UserSettings(user_id=user.id, is_onboarded=False)
+        db.add(user_settings)
+        db.commit()
+    except IntegrityError:
+        # Settings already exist (race condition or other error), rollback and continue
+        db.rollback()
 
     # Handle invite code usage and auto-join after user creation
     if invite_code:

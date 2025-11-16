@@ -102,13 +102,6 @@ def register_admin(request: RegisterRequest, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-        # Create user settings for the new admin
-        from src.database.models import UserSettings
-
-        user_settings = UserSettings(user_id=user.id, is_onboarded=False)
-        db.add(user_settings)
-        db.commit()
-
         return {"message": "Admin registered successfully", "user_id": user.id}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
