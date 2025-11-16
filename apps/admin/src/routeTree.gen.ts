@@ -9,8 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as GoogleCallbackRouteImport } from './routes/google-callback'
-import { Route as GithubCallbackRouteImport } from './routes/github-callback'
 import { Route as DashboardLayoutRouteImport } from './routes/_dashboardLayout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardLayoutSettingsRouteImport } from './routes/_dashboardLayout/settings'
@@ -35,16 +33,6 @@ import { Route as DashboardLayoutArticlesEditIdRouteImport } from './routes/_das
 import { Route as DashboardLayoutCoursesSectionsSectionIdEditRouteImport } from './routes/_dashboardLayout/courses/sections/$sectionId/edit'
 import { Route as DashboardLayoutCoursesLessonsLessonIdEditRouteImport } from './routes/_dashboardLayout/courses/lessons/$lessonId/edit'
 
-const GoogleCallbackRoute = GoogleCallbackRouteImport.update({
-  id: '/google-callback',
-  path: '/google-callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GithubCallbackRoute = GithubCallbackRouteImport.update({
-  id: '/github-callback',
-  path: '/github-callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardLayoutRoute = DashboardLayoutRouteImport.update({
   id: '/_dashboardLayout',
   getParentRoute: () => rootRouteImport,
@@ -179,8 +167,6 @@ const DashboardLayoutCoursesLessonsLessonIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/github-callback': typeof GithubCallbackRoute
-  '/google-callback': typeof GoogleCallbackRoute
   '/activity': typeof DashboardLayoutActivityRoute
   '/app-settings': typeof DashboardLayoutAppSettingsRoute
   '/broadcast': typeof DashboardLayoutBroadcastRoute
@@ -205,8 +191,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/github-callback': typeof GithubCallbackRoute
-  '/google-callback': typeof GoogleCallbackRoute
   '/activity': typeof DashboardLayoutActivityRoute
   '/app-settings': typeof DashboardLayoutAppSettingsRoute
   '/broadcast': typeof DashboardLayoutBroadcastRoute
@@ -233,8 +217,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_dashboardLayout': typeof DashboardLayoutRouteWithChildren
-  '/github-callback': typeof GithubCallbackRoute
-  '/google-callback': typeof GoogleCallbackRoute
   '/_dashboardLayout/activity': typeof DashboardLayoutActivityRoute
   '/_dashboardLayout/app-settings': typeof DashboardLayoutAppSettingsRoute
   '/_dashboardLayout/broadcast': typeof DashboardLayoutBroadcastRoute
@@ -261,8 +243,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/github-callback'
-    | '/google-callback'
     | '/activity'
     | '/app-settings'
     | '/broadcast'
@@ -287,8 +267,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/github-callback'
-    | '/google-callback'
     | '/activity'
     | '/app-settings'
     | '/broadcast'
@@ -314,8 +292,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_dashboardLayout'
-    | '/github-callback'
-    | '/google-callback'
     | '/_dashboardLayout/activity'
     | '/_dashboardLayout/app-settings'
     | '/_dashboardLayout/broadcast'
@@ -342,26 +318,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardLayoutRoute: typeof DashboardLayoutRouteWithChildren
-  GithubCallbackRoute: typeof GithubCallbackRoute
-  GoogleCallbackRoute: typeof GoogleCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/google-callback': {
-      id: '/google-callback'
-      path: '/google-callback'
-      fullPath: '/google-callback'
-      preLoaderRoute: typeof GoogleCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/github-callback': {
-      id: '/github-callback'
-      path: '/github-callback'
-      fullPath: '/github-callback'
-      preLoaderRoute: typeof GithubCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_dashboardLayout': {
       id: '/_dashboardLayout'
       path: ''
@@ -583,8 +543,6 @@ const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardLayoutRoute: DashboardLayoutRouteWithChildren,
-  GithubCallbackRoute: GithubCallbackRoute,
-  GoogleCallbackRoute: GoogleCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
