@@ -25,6 +25,18 @@ const config: ZudokuConfig = {
         },
         {
           type: "category",
+          label: "Community & Interaction",
+          icon: "users",
+          items: [
+            "/features/timeline",
+            "/features/channels",
+            "/features/posts",
+            "/features/reactions",
+            "/features/mention",
+          ],
+        },
+        {
+          type: "category",
           label: "Core Learning",
           icon: "book",
           items: [
@@ -33,18 +45,6 @@ const config: ZudokuConfig = {
             "/features/articles",
             "/features/enrollment",
             "/features/sections",
-          ],
-        },
-        {
-          type: "category",
-          label: "Community & Interaction",
-          icon: "users",
-          items: [
-            "/features/channels",
-            "/features/posts",
-            "/features/reactions",
-            "/features/mention",
-            "/features/timeline",
           ],
         },
         {

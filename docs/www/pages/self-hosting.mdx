@@ -4,88 +4,54 @@ title: Self-Hosting
 
 Deploy your own OpenCircle instance with Docker.
 
-## Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/devscalelabs/opencircle.git
-cd opencircle
-
-# Copy environment template
-cp .env.example .env
-
-# Start all services
-docker compose up -d
-```
-
-Access your applications:
-- **Platform**: http://localhost:3000
-- **Admin Dashboard**: http://localhost:4000
-- **API**: http://localhost:8000
-
-## Install Docker
-
-### macOS
-```bash
-# Install Docker Desktop using Homebrew
-brew install --cask docker
-
-# Or download from https://docker.com/products/docker-desktop
-```
-
-### Ubuntu/Debian
-```bash
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Add your user to the docker group
-sudo usermod -aG docker $USER
-
-# Install Docker Compose
-sudo apt-get update
-sudo apt-get install docker-compose-plugin
-
-# Log out and back in for group changes to take effect
-```
-
-### Windows
-Download and install Docker Desktop from [docker.com](https://docker.com/products/docker-desktop)
-
-### Verify Installation
-```bash
-docker --version
-docker compose version
-```
-
 ## Prerequisites
 
-- Docker and Docker Compose installed (see installation guide above)
 - At least 2GB RAM available
 - 10GB free disk space
+- A terminal/command line interface
 
-## Environment Configuration
+## Quick Start
 
-Edit your `.env` file with these settings:
+### Step 1: Install Docker
+
+Install Docker on your system:
+
+**macOS:**
+```bash
+brew install --cask docker
+```
+
+**Ubuntu/Debian:**
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+# Log out and back in
+```
+
+**Windows:** Download from [docker.com](https://docker.com/products/docker-desktop)
+
+### Step 2: Create Environment Configuration (.env)
+
+In your deployment directory, create a `.env` file with the following variables:
 
 ```bash
 # Database
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=postgres
-DB_URL="postgresql://opencircle:opencircle@localhost:5432/opencircle"
+POSTGRES_PASSWORD=your_secure_password_here
+POSTGRES_DB=opencircle
 
 # Redis
-REDIS_URL=redis://localhost:6381
-CELERY_BROKER_URL=redis://localhost:6381
-CELERY_RESULT_BACKEND=redis://localhost:6381
+REDIS_URL=redis://redis:6379
+CELERY_BROKER_URL=redis://redis:6379
+CELERY_RESULT_BACKEND=redis://redis:6379
 
 # Platform URLs
 PLATFORM_URL=http://localhost:3000/
 ADMIN_URL=http://localhost:4000/
 VITE_API_URL=http://localhost:8000/
 
-# GitHub OAuth
+# GitHub OAuth (required for authentication)
 GITHUB_CLIENT_ID=your_client_id
 GITHUB_CLIENT_SECRET=your_client_secret
 GITHUB_REDIRECT_URI=http://localhost:3000/github-callback/
@@ -106,6 +72,26 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI="http://localhost:8000/api/v1/auth/google/callback"
 ```
 
+### Step 3: Download Docker Compose Configuration
+
+```bash
+curl -o docker-compose.yml https://raw.githubusercontent.com/devscalelabs/opencircle/refs/heads/main/docker-compose.yml
+```
+
+### Step 4: Start All Services
+
+```bash
+docker compose up -d
+```
+
+### Step 5: Verify Access
+
+Once all services are running, access your applications:
+
+- **Platform**: http://localhost:3000
+- **Admin Dashboard**: http://localhost:4000
+- **API**: http://localhost:8000
+
 ## Services
 
 | Service | Port | Description |
@@ -117,54 +103,78 @@ GOOGLE_REDIRECT_URI="http://localhost:8000/api/v1/auth/google/callback"
 | **Redis** | - | Cache (internal) |
 | **Celery** | - | Background tasks (internal) |
 
-## Production Deployment
+## Docker Compose Configuration (Manual Alternative)
 
-### Domain Setup
-Update your URLs for production:
-```bash
-PLATFORM_URL=https://yourdomain.com
-ADMIN_URL=https://admin.yourdomain.com
-GITHUB_REDIRECT_URI=https://yourdomain.com/github-callback/
-```
+If you prefer to create the docker-compose.yml file manually instead of downloading it, here's the complete configuration:
 
-### SSL/TLS with Nginx
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com;
-    
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
+```yaml
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: opencircle-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-opencircle}
+    volumes:
+      - opencircle_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - opencircle-network
 
-### Security Checklist
-- Change all default passwords
-- Enable firewall rules
-- Set up regular backups
-- Use strong, unique secrets
+  redis:
+    image: redis:7-alpine
+    container_name: opencircle-redis
+    volumes:
+      - opencircle_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - opencircle-network
 
-## Logs and Updates
+  migrate:
+    image: ghcr.io/devscalelabs/opencircle-api:latest
+    container_name: opencircle-migration
+    command: >
+      sh -c "
+      echo 'Waiting for PostgreSQL to be available...' &&
+      while ! pg_isready -h postgres -p 5432 -U ${POSTGRES_USER:-postgres};
+      do sleep 2; done &&
+      echo '[MIGRATION] Running Alembic upgrade head...' &&
+      uv run alembic upgrade head &&
+      echo '[SUCCESS] Schema migration completed.'
+      "
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-opencircle}
+      - DB_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-opencircle}
+      - ENVIRONMENT=production
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-opencircle}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - opencircle-network
+    restart: "no"
 
-View logs:
-```bash
-docker compose logs -f
-docker compose logs -f api
-```
-
-Update services:
-```bash
-docker compose pull
-docker compose up -d
-```
-
-Backup database:
-```bash
-docker exec opencircle-postgres pg_dump -U postgres opencircle > backup.sql
-```
+  api:
+    image: ghcr.io/devscalelabs/opencircle-api:latest
+    container_name: opencircle-api
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-opencircle}
+      - DB_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-opencircle}
+      - REDIS_URL=redis://redis:6379
+      - CELERY_BROKER_URL=redis://redis:6379
+      - CELERY_RESULT_BACKEND=redis://redis:6379
+      - ENVIRONMENT=production
+      - R2_ENDPOINT_URL=${R2_ENDPOINT_URL}
