@@ -11,6 +11,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Search } from "lucide-react";
+import moment from "moment";
 import { useMemo, useState } from "react";
 
 interface UserTableProps {
@@ -20,34 +21,10 @@ interface UserTableProps {
 
 export const UserTable = ({ users, isLoading }: UserTableProps) => {
 	const router = useRouter();
-	const [rowSelection, setRowSelection] = useState({});
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const columns: ColumnDef<User>[] = [
-		{
-			id: "select",
-			header: ({ table }) => (
-				<input
-					type="checkbox"
-					checked={table.getIsAllPageRowsSelected()}
-					onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
-					aria-label="Select all"
-					className="rounded border-gray-300"
-				/>
-			),
-			cell: ({ row }) => (
-				<input
-					type="checkbox"
-					checked={row.getIsSelected()}
-					onChange={(e) => row.toggleSelected(!!e.target.checked)}
-					aria-label="Select row"
-					className="rounded border-gray-300"
-				/>
-			),
-			enableSorting: false,
-			enableHiding: false,
-		},
 		{
 			accessorKey: "username",
 			header: ({ column }) => {
@@ -172,7 +149,9 @@ export const UserTable = ({ users, isLoading }: UserTableProps) => {
 			},
 			cell: ({ row }) => {
 				const date = new Date(row.getValue("created_at") as string);
-				return <div className="text-sm">{date.toLocaleDateString()}</div>;
+				return (
+					<div className="text-sm">{moment(date).format("DD MMM YYYY")}</div>
+				);
 			},
 		},
 		{
@@ -219,10 +198,8 @@ export const UserTable = ({ users, isLoading }: UserTableProps) => {
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
-		onRowSelectionChange: setRowSelection,
 		onSortingChange: setSorting,
 		state: {
-			rowSelection,
 			sorting,
 		},
 	});
