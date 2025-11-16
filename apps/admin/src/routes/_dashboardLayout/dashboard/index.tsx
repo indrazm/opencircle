@@ -73,10 +73,7 @@ function RouteComponent() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="font-bold text-2xl text-foreground">Dashboard</h1>
-				<p className="text-foreground">
-					Overview of your platform's performance
-				</p>
+				<h1 className="font-medium text-2xl text-foreground">Dashboard</h1>
 			</div>
 
 			<DashboardStatsCards

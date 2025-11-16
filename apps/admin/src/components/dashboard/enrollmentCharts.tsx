@@ -35,7 +35,7 @@ export const EnrollmentChartComponent = ({
 	};
 
 	return (
-		<div className="rounded-lg bg-background p-6 shadow">
+		<div className="rounded-lg bg-background-secondary p-6 shadow">
 			<h3 className="mb-4 font-semibold text-foreground text-lg">
 				Enrollment Trends
 			</h3>
