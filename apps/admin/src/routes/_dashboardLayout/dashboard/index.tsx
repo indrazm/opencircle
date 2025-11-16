@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardStatsCards } from "../../../components/dashboard/dashboardStatistic";
-import { EnrollmentChartComponent } from "../../../components/dashboard/enrollmentCharts";
-import { RecentEnrollmentsTable } from "../../../components/dashboard/recentCourseEnrollments";
 import { METADATA } from "../../../constants/metadata";
+import { DashboardStatsCards } from "../../../features/dashboard/dashboardStatistic";
+import { EnrollmentChartComponent } from "../../../features/dashboard/enrollmentCharts";
+import { RecentEnrollmentsTable } from "../../../features/dashboard/recentCourseEnrollments";
 import { dashboardService } from "../../../services/dashboard";
 
 export const Route = createFileRoute("/_dashboardLayout/dashboard/")({
