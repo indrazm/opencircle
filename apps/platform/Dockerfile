@@ -1,15 +1,23 @@
 # Build stage
 FROM node:18-alpine AS builder
 
+# Install tools needed for environment variable processing
+RUN apk add --no-cache grep
+
 # Set working directory
 WORKDIR /app
 
-# Define build argument for API URL
+# Define build argument for API URL (fallback to .env.prod)
 ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+# If VITE_API_URL is not provided as build arg, read from .env.prod
+RUN if [ -z "$VITE_API_URL" ] && [ -f .env.prod ]; then \
+    export VITE_API_URL=$(grep -v '^#' .env.prod | grep VITE_API_URL | cut -d'=' -f2); \
+    fi
+ENV VITE_API_URL=${VITE_API_URL:-http://localhost:8000/api}
 
-# Copy workspace files first
+# Copy workspace files first, including .env.prod if it exists
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY .env.prod* ./
 COPY packages/ ./packages/
 COPY apps/platform/package.json ./apps/platform/
 
@@ -36,7 +44,10 @@ COPY apps/platform/tsconfig*.json ./apps/platform/
 WORKDIR /app/apps/platform
 # Pass the build argument to the build command
 ARG VITE_API_URL
-RUN VITE_API_URL=$VITE_API_URL pnpm build
+RUN if [ -z "$VITE_API_URL" ] && [ -f ../../.env.prod ]; then \
+    export VITE_API_URL=$(grep -v '^#' ../../.env.prod | grep VITE_API_URL | cut -d'=' -f2); \
+    fi && \
+    VITE_API_URL=${VITE_API_URL:-http://localhost:8000/api} pnpm build
 
 # Production stage
 FROM nginx:alpine AS production

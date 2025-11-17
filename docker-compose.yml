@@ -98,9 +98,8 @@ services:
     build:
       context: .
       dockerfile: apps/admin/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     container_name: opencircle-admin
+    env_file: .env.prod
     ports:
       - "4000:80"
     restart: unless-stopped
@@ -111,9 +110,8 @@ services:
     build:
       context: .
       dockerfile: apps/platform/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     container_name: opencircle-platform
+    env_file: .env.prod
     ports:
       - "3000:80"
     restart: unless-stopped
