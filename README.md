@@ -27,7 +27,7 @@ Open-source community platform combining online education with community interac
 
 ## Get Started
 
-For setup and deployment instructions, see the [self-hosting guide](https://circle.devscalelabs.com/docs/self-hosting).
+For setup and deployment instructions, see the [self-hosting guide](https://circle.devscalelabs.com/self-hosting).
 
 ## Tech Stack
 
